@@ -84,7 +84,7 @@ def gpt_contextual_rating(tickers, model="gpt-3.5-turbo-1106", force=False, hori
             arguments = response.choices[0].message.tool_calls[0].function.arguments
             parsed = json.loads(arguments)
             mu = float(parsed["mu_prediction"])
-            mu = max(0.0, min(mu, 0.2))  # 限制在 0% 到 20% 之間
+            #mu = max(0.0, min(mu, 0.2))  # 限制在 0% 到 20% 之間
             mu_estimates[tk] = mu
             cache[cache_key] = mu
             print(f"[GPT] {tk}: {mu:.2%}")

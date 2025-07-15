@@ -10,6 +10,7 @@ from fetch_0056_components import fetch_0056_components
 from datetime import datetime, timedelta
 from my_ai_module import gpt_contextual_rating
 from tqdm import tqdm
+from scipy.stats import norm
 
 # 解決 asyncio 衝突，使同一 event loop 可以多次 re-enter
 nest_asyncio.apply()
@@ -115,8 +116,9 @@ if __name__ == '__main__':
     prices = load_prices(tickers, start_date, end_date)
     sigma = sample_cov(prices)
 
-    # 4. 使用 AI 模型預測報酬率
-    mu_pred = gpt_contextual_rating(tickers, horizon_months=3)
+    # 4. 使用 AI 模型預測報酬率 by horizon_months
+    horizon_months=3
+    mu_pred = gpt_contextual_rating(tickers, horizon_months=horizon_months)
 
     # 5. 原始最適化
     weights_raw, (exp_ret, vol, sharpe) = optimize_portfolio(
@@ -129,10 +131,11 @@ if __name__ == '__main__':
     # 7. 顯示結果
     print(f"使用樣本期：{start_date} 到 {end_date}\n")
     print('=== 最佳化結果（Max Sharpe）===')
+    probability = norm.cdf(sharpe)  # Φ(Sharpe)
     for tk, w in weights_final.items():
         if w > 0:
             print(f'  {tk}: {w:.2%}')
-    print(f"\n預期年化報酬: {exp_ret:.2%}, 年化波動率: {vol:.2%}, Sharpe: {sharpe:.2f}\n")
+    print(f"\n預期年化報酬: {exp_ret:.2%}, 年化波動率: {vol:.2%}, Sharpe: {sharpe:.2f}, Probability : {probability:.2f} \n")
     print(f'=== 資金配置 (總資金 {capital:,} TWD) ===')
     for tk, w in weights_final.items():
         amount = capital * w
