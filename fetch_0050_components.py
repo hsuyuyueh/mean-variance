@@ -4,25 +4,33 @@
 import os
 import json
 from datetime import datetime
-from playwright.sync_api import sync_playwright
+from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeout
 
 CACHE_DIR = "./cache"
 os.makedirs(CACHE_DIR, exist_ok=True)
 
-def fetch_0056_components():
+def fetch_0050_components():
     today = datetime.today().strftime("%Y%m%d")
-    cache_file = os.path.join(CACHE_DIR, f"0056_components_{today}.json")
+    cache_file = os.path.join(CACHE_DIR, f"0050_components_{today}.json")
+    # 如果當天已有快取，直接讀出並回傳
     if os.path.exists(cache_file):
         with open(cache_file, "r", encoding="utf-8") as f:
-            print(f"[快取] 0056 已讀取 {cache_file}")
+            print(f"[快取] 0050 已讀取 {cache_file}")
             return json.load(f)
 
-    url = "https://www.yuantaetfs.com/product/detail/0056/ratio"
+    url = "https://www.yuantaetfs.com/product/detail/0050/ratio"
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
+        browser = p.chromium.launch(headless=True, args=["--no-sandbox"])
         page = browser.new_page()
-        page.goto(url, wait_until="networkidle")
+        try:
+            page.goto(url, wait_until="domcontentloaded", timeout=30000)
+            page.wait_for_selector('text=展開', timeout=10000)
+        except PlaywrightTimeout:
+            print("載入頁面超時，請檢查網路或網站狀態")
+            browser.close()
+            return []
 
+        # 點擊展開
         expand_locator = page.locator('text=展開')
         if expand_locator.count() > 0:
             expand_locator.first.click()
@@ -40,7 +48,7 @@ def fetch_0056_components():
         stock_table = tables.nth(1)
         rows = stock_table.locator('div.tbody > div.tr')
         total = rows.count()
-        print(f"找到 0056 {total} 列成分股")
+        print(f"找到 0050 {total} 列成分股")
 
         components = []
         for i in range(total):
@@ -52,7 +60,8 @@ def fetch_0056_components():
                 components.append((f"{code}.TW", name))
         browser.close()
 
+    # 寫入快取檔
     with open(cache_file, "w", encoding="utf-8") as f:
         json.dump(components, f, ensure_ascii=False, indent=2)
-    print(f"[快取] 已儲存 0056 成分股到 {cache_file}")
+    print(f"[快取] 已儲存 0050 成分股到 {cache_file}")
     return components

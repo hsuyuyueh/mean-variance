@@ -12,6 +12,14 @@ from my_ai_module import gpt_contextual_rating
 from tqdm import tqdm
 from scipy.stats import norm
 
+def get_results():
+    return {
+        "exp_ret": exp_ret,
+        "vol": vol,
+        "sharpe": sharpe,
+        "weights": weights_final
+    }
+
 # 解決 asyncio 衝突，使同一 event loop 可以多次 re-enter
 nest_asyncio.apply()
 

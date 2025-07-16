@@ -45,8 +45,7 @@ def fetch_perplexity_news_summary(query: str, horizon_months: int = 3) -> str:
     payload = {
         "model": PERPLEXITY_MODEL,
         "messages": messages,
-        "max_tokens": 1800,
-        "temperature": 0.4
+        "max_completion_tokens": 1800
     }
 
     try:

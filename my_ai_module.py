@@ -3,102 +3,88 @@ import pandas as pd
 import time
 import json
 import os
+import re
 from tqdm import tqdm
 from context_builder import build_context_bundle
 
 api_key = os.getenv("OPENAI_API_KEY")
 client = OpenAI(api_key=api_key)
 
-mu_schema = {
-    "name": "report_mu",
-    "description": "預測指定股票的預期報酬率（未來一段期間內）",
-    "parameters": {
-        "type": "object",
-        "properties": {
-            "mu_prediction": {
-                "type": "number",
-                "description": "股票未來一段期間內預期報酬率，小數格式，例如 0.02 代表 2%"
-            }
-        },
-        "required": ["mu_prediction"]
-    }
-}
-
+# 快取檔案位置
 CACHE_FILE = "./default_mu_cache.json"
 
 def load_cache():
     if os.path.exists(CACHE_FILE):
         with open(CACHE_FILE, "r", encoding="utf-8") as f:
-            content = f.read().strip()
-            if not content:
-                print("⚠️ 快取檔案為空，將略過使用")
-                return {}
             try:
-                return json.loads(content)
-            except Exception as e:
-                print(f"⚠️ 快取檔案格式錯誤：{e}")
+                return json.load(f)
+            except:
                 return {}
     return {}
 
 def save_cache(cache):
-    try:
-        with open(CACHE_FILE, "w", encoding="utf-8") as f:
-            json.dump(cache, f, indent=2, ensure_ascii=False)
-    except Exception as e:
-        with open("./default_mu_cache.json", "w", encoding="utf-8") as f:
-            json.dump(cache, f, indent=2, ensure_ascii=False)
+    with open(CACHE_FILE, "w", encoding="utf-8") as f:
+        json.dump(cache, f, indent=2, ensure_ascii=False)
 
-def gpt_contextual_rating(tickers, model="gpt-3.5-turbo-1106", force=False, horizon_months=3):
+# 主函式：預測 μ 並 debug 原始資料，處理 markdown fence
+
+def gpt_contextual_rating(tickers, model="gpt-4o-mini", force=False, horizon_months=3):
     mu_estimates = {}
     cache = load_cache()
 
+    # 載入預設提示
     try:
         with open("./default_prompt.txt", "r", encoding="utf-8") as f:
             base_prompt = f.read()
-    except Exception as e:
-        print("讀取 default_prompt.txt 失敗：", e)
-        base_prompt = "你是一位財經分析師，請評估下列股票的預期報酬率。"
+    except:
+        base_prompt = "你是一位資深財經分析師，請評估下列股票的預期報酬率。"
 
     for tk in tqdm(tickers, desc=f"預測 {horizon_months} 個月 μ 值"):
         context = base_prompt + "\n" + build_context_bundle(tk, horizon_months)
-        cache_key = f"{model}::{tk}::{horizon_months}::{hash(context)}"
+        key = f"{tk}::{horizon_months}::{hash(context)}"
 
-        if not force and cache_key in cache:
-            mu_estimates[tk] = cache[cache_key]
-            print(f"[快取] {tk}: {cache[cache_key]:.2%}")
+        if not force and key in cache:
+            mu = cache[key]
+            print(f"[快取] {tk}: {mu:.2%}")
+            mu_estimates[tk] = mu
             continue
 
         messages = [
-            {"role": "system", "content": context}
+            {"role": "system", "content": context},
+            {"role": "user", "content": (
+                "請僅回傳純 JSON {\"mu_prediction\": <數值>}，勿加其他文字。"
+            )}
         ]
 
         try:
-            response = client.chat.completions.create(
+            resp = client.chat.completions.create(
                 model=model,
                 messages=messages,
-                tools=[{"type": "function", "function": mu_schema}],
-                tool_choice={"type": "function", "function": {"name": "report_mu"}},
-                temperature=0.4,
-                max_tokens=100
+                max_completion_tokens=100,
+                temperature=1
             )
-            arguments = response.choices[0].message.tool_calls[0].function.arguments
-            parsed = json.loads(arguments)
-            mu = float(parsed["mu_prediction"])
-            #mu = max(0.0, min(mu, 0.2))  # 限制在 0% 到 20% 之間
-            mu_estimates[tk] = mu
-            cache[cache_key] = mu
-            print(f"[GPT] {tk}: {mu:.2%}")
-        except Exception as e:
-            print(f"[錯誤] {tk}: GPT 回應解析失敗: {e}")
-            mu_estimates[tk] = 0.05
-            cache[cache_key] = 0.05
+            # Debug: 印出原始回應與內容
+            print(f"DEBUG raw resp: {resp}")
+            content = resp.choices[0].message.content.strip()
+            print(f"DEBUG content: {content}")
 
-        time.sleep(1.2)
+            # 用正則抽出最內層 JSON
+            m = re.search(r"\{.*?\}", content, flags=re.S)
+            json_str = m.group(0) if m else content
+            data = json.loads(json_str)
+            mu_raw = float(data.get("mu_prediction", 0.0))
+            # 若回傳 >1，視為百分比，轉換小數
+            mu = mu_raw / 100 if mu_raw > 1 else mu_raw
+        except Exception:
+            mu = 0.0
+
+        mu_estimates[tk] = mu
+        cache[key] = mu
+        time.sleep(1)
 
     save_cache(cache)
     return pd.Series(mu_estimates)
-
+# 測試
 if __name__ == '__main__':
-    sample = ['2357.TW', '2330.TW', '2317.TW']
-    mu = gpt_contextual_rating(sample)
-    print(mu)
+    sample = ['2330.TW', '2317.TW', '2454.TW']
+    print(gpt_contextual_rating(sample))
