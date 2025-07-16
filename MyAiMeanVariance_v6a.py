@@ -1,4 +1,5 @@
-# 類別化改寫：AiMeanVariancePortfolio
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
 import nest_asyncio
 import pandas as pd
@@ -11,8 +12,11 @@ from pypfopt.efficient_frontier import EfficientFrontier
 from pypfopt.objective_functions import L2_reg
 from scipy.stats import norm
 from tqdm import tqdm
-from my_ai_module import gpt_contextual_rating
 import matplotlib.pyplot as plt
+
+from fetch_0056_components import fetch_0056_components
+from fetch_0050_components import fetch_0050_components
+from my_ai_module import gpt_contextual_rating
 
 nest_asyncio.apply()
 
@@ -21,40 +25,30 @@ CACHE_DIR = "./cache"
 os.makedirs(CACHE_DIR, exist_ok=True)
 
 class AiMeanVariancePortfolio:
-    def __init__(self, tickers, prices, profile_level='P3'):  # 預設為成長型
-        self.profile_level = profile_level  # P1, P2, P3, P4
+    def __init__(self, tickers, prices, profile_level='P3'):
+        self.profile_level = profile_level
         self.tickers = tickers
         self.prices = prices
-        self.mu = None
+        self.mu_final = None
         self.fundamentals = None
         self.rf_rate = 0.015
-        self.capital = 10_000_000
         self.weights = None
-        self.sigma = None
-        self.mu_final = None
+        self.performance = None
+        self.target_return = None
 
     def fetch_fundamentals(self):
-        """
-        抓取並快取基本面資料，每天只跑一次 yfinance
-        cache 格式： cache/fundamentals_YYYYMMDD.json
-        """
         today = datetime.today().strftime('%Y%m%d')
         cache_file = os.path.join(CACHE_DIR, f"fundamentals_{today}.json")
         if os.path.exists(cache_file):
             print(f"[快取] 載入基本面資料：{cache_file}")
-            df = pd.read_json(cache_file)
-            self.fundamentals = df
+            self.fundamentals = pd.read_json(cache_file)
             return
-
         fundamentals = {}
         for tk in tqdm(self.tickers, desc="抓取基本面資料"):
             try:
                 info = yf.Ticker(tk).info
-                fundamentals[tk] = {
-                    'pe': info.get('trailingPE', 20),
-                    'roe': info.get('returnOnEquity', 0.1) * 100
-                }
-            except Exception:
+                fundamentals[tk] = {'pe': info.get('trailingPE', 20), 'roe': info.get('returnOnEquity', 0.1)*100}
+            except:
                 fundamentals[tk] = {'pe': 20, 'roe': 10}
         df = pd.DataFrame.from_dict(fundamentals, orient='index')
         df.to_json(cache_file, force_ascii=False, indent=2)
@@ -67,39 +61,41 @@ class AiMeanVariancePortfolio:
         roe_scaled = self.fundamentals['roe'] / 20
         adj_factor = 0.5 * pe_scaled + 0.5 * roe_scaled
         mu_style = mu_base * adj_factor
-        mu_momentum = mu_style * (1 + 0.3 * ((self.prices.iloc[-1] / self.prices.iloc[-60]) - 1))
+        lookback = min(60, len(self.prices))
+        mu_momentum = mu_style
+        if lookback >= 60:
+            mu_momentum = mu_style * (1 + 0.3 * ((self.prices.iloc[-1] / self.prices.iloc[-lookback]) - 1))
         vol = self.prices.pct_change().rolling(60).std().mean().fillna(0)
         scaled = 1 / (1 + 0.5 * vol)
         self.mu_final = mu_momentum * scaled
 
     def optimize(self):
-        # 計算共變異數矩陣並最適化
-        self.sigma = exp_cov(self.prices, span=180)
-        ef = EfficientFrontier(self.mu_final, self.sigma, weight_bounds=(0, 1))
-        ef.add_objective(L2_reg, gamma=0.1)
-        ef.max_sharpe(risk_free_rate=self.rf_rate)
-        self.weights = ef.clean_weights()
-        self.performance = ef.portfolio_performance(risk_free_rate=self.rf_rate, verbose=False)
-
-        # 計算 portfolio beta 並輸出結果
+        sigma = exp_cov(self.prices, span=180)
+        common = self.mu_final.index.intersection(sigma.index)
+        mu = self.mu_final.loc[common]
+        sigma = sigma.loc[common, common]
+        ef1 = EfficientFrontier(mu, sigma, weight_bounds=(0, 1))
+        ef1.max_sharpe(risk_free_rate=self.rf_rate)
+        ret1, _, _ = ef1.portfolio_performance(risk_free_rate=self.rf_rate, verbose=False)
+        self.target_return = min(ret1, mu.max() * 0.999)
+        ef2 = EfficientFrontier(mu, sigma, weight_bounds=(0, 1))
+        ef2.add_objective(L2_reg, gamma=0.1)
+        ef2.efficient_return(target_return=self.target_return)
+        self.weights = ef2.clean_weights()
+        self.performance = ef2.portfolio_performance(risk_free_rate=self.rf_rate, verbose=False)
         beta = self.estimate_portfolio_beta()
-        print("\n=== 最佳化結果（class 模式）===")
+        print("\n=== 最佳化結果 (class 模式) ===\n")
         print(f"→ 投組 β：{beta}")
-        if self.profile_level == 'P1' and beta > 0.8:
-            print("⚠️ 警告：此配置不適合保守型客戶 (C1)")
-        elif self.profile_level == 'P2' and beta > 1.0:
-            print("⚠️ 警告：此配置風險高於穩健型 (C2)")
-        elif self.profile_level == 'P3' and beta > 1.3:
-            print("⚠️ 警告：超過成長型 (C3) 可接受 β 區間")
-        probability = norm.cdf(self.performance[2])
+        prob = norm.cdf(self.performance[2])
         for tk, w in sorted(self.weights.items(), key=lambda x: -x[1]):
             if w > 0:
+                sector = 'N/A'
                 try:
                     sector = yf.Ticker(tk).info.get('sector', 'N/A')
                 except:
-                    sector = 'N/A'
-                print(f"{tk}: {w:.2%}, μ={self.mu_final.get(tk, 0):.2%}, Sector={sector}")
-        print(f"\n預期年化報酬: {self.performance[0]:.2%}, 年化波動率: {self.performance[1]:.2%}, Sharpe: {self.performance[2]:.2f}, P: {probability:.2f}")
+                    pass
+                print(f"{tk}: {w:.2%}, μ={mu.get(tk,0):.2%}, Sector={sector}")
+        print(f"\n預期年化報酬: {self.performance[0]:.2%}, 年化波動率: {self.performance[1]:.2%}, Sharpe: {self.performance[2]:.2f}, P: {prob:.2f}\n")
 
     def estimate_portfolio_beta(self):
         market = yf.download("^TWII", period="1y", auto_adjust=False)['Adj Close'].pct_change().dropna()
@@ -107,14 +103,13 @@ class AiMeanVariancePortfolio:
         for tk in self.tickers:
             try:
                 stock = yf.download(tk, period="1y", auto_adjust=False)['Adj Close'].pct_change().dropna()
-                df = pd.concat([stock, market], axis=1).dropna()
-                cov = df.cov().iloc[0, 1]
-                var = df.iloc[:, 1].var()
-                betas[tk] = cov / var
+                df2 = pd.concat([stock, market], axis=1).dropna()
+                cov = df2.cov().iloc[0,1]
+                var = df2.iloc[:,1].var()
+                betas[tk] = cov/var
             except:
                 betas[tk] = 1.0
-        portfolio_beta = sum(self.weights.get(tk, 0) * betas.get(tk, 1.0) for tk in self.tickers)
-        return round(portfolio_beta, 2)
+        return round(sum(self.weights.get(tk,0)*betas.get(tk,1) for tk in self.tickers), 2)
 
     def save_weights(self, filepath="current_portfolio.json"):
         with open(filepath, 'w') as f:
@@ -122,53 +117,51 @@ class AiMeanVariancePortfolio:
 
     def backtest(self, rebalance_freq='2W'):
         results = []
-        rebalance_days = pd.date_range(start=self.prices.index[0], end=self.prices.index[-1], freq=rebalance_freq)
-        for date in rebalance_days:
-            window_prices = self.prices[:date].dropna(axis=1, how='any')
-            if len(window_prices) < 100:
+        dates = pd.date_range(self.prices.index[0], self.prices.index[-1], freq=rebalance_freq)
+        for date in dates:
+            window = self.prices[:date].dropna(axis=1, how='any')
+            if len(window) < 100:
                 continue
-            sigma = exp_cov(window_prices, span=180)
-            mu_momentum = self.mu_final * (1 + 0.3 * ((window_prices.iloc[-1] / window_prices.iloc[-60]) - 1))
-            vol = window_prices.pct_change().rolling(60).std().mean().fillna(0)
-            mu_adjusted = mu_momentum * (1 / (1 + 0.5 * vol))
+            sigma_bt = exp_cov(window, span=180)
+            common_bt = self.mu_final.index.intersection(sigma_bt.index)
+            mu_bt = self.mu_final.loc[common_bt]
+            sigma_bt = sigma_bt.loc[common_bt, common_bt]
+            mu_mom = mu_bt * (1 + 0.3 * ((window.iloc[-1]/window.iloc[-60]) - 1))
+            vol = window.pct_change().rolling(60).std().mean().fillna(0)
+            mu_adj = mu_mom * (1 / (1 + 0.5 * vol))
             try:
-                ef = EfficientFrontier(mu_adjusted, sigma)
-                ef.add_objective(L2_reg, gamma=0.1)
-                ef.max_sharpe(risk_free_rate=self.rf_rate)
-                w = ef.clean_weights()
-                perf = ef.portfolio_performance(risk_free_rate=self.rf_rate)
+                ef_bt = EfficientFrontier(mu_adj, sigma_bt, weight_bounds=(0, 1))
+                ef_bt.add_objective(L2_reg, gamma=0.1)
+                ef_bt.efficient_return(target_return=self.target_return)
+                weights_bt = ef_bt.clean_weights()
+                perf_bt = ef_bt.portfolio_performance(risk_free_rate=self.rf_rate, verbose=False)
+                top5 = dict(sorted(weights_bt.items(), key=lambda x: -x[1])[:5])
                 results.append({
                     'date': date.strftime('%Y-%m-%d'),
-                    'exp_ret': perf[0],
-                    'vol': perf[1],
-                    'sharpe': perf[2],
-                    'top_holdings': dict(sorted(w.items(), key=lambda x: -x[1])[:5])
+                    'exp_ret': perf_bt[0],
+                    'vol': perf_bt[1],
+                    'sharpe': perf_bt[2],
+                    'top_holdings': top5
                 })
             except:
                 continue
         df = pd.DataFrame(results)
         df.to_json("backtest_report.json", indent=2)
         df.to_excel("backtest_report.xlsx", index=False)
-        plt.figure(figsize=(10,4))
+        plt.figure(figsize=(10, 4))
         plt.plot(df['date'], df['sharpe'], marker='o')
-        plt.title('Sharpe Ratio Over Time')
         plt.xticks(rotation=45)
-        plt.grid(True)
         plt.tight_layout()
         plt.savefig("sharpe_trend.png")
         return df
 
-# ===== 主程式使用範例 =====
 if __name__ == '__main__':
-    from fetch_0056_components import fetch_0056_components
-    from fetch_0050_components import fetch_0050_components
-
     components = list({tk: name for tk, name in fetch_0050_components() + fetch_0056_components()}.items())
     tickers = [tk for tk, name in components if not tk.startswith("289")]
-    start_date = (datetime.today() - timedelta(days=365)).strftime('%Y-%m-%d')
-    end_date = datetime.today().strftime('%Y-%m-%d')
-    # 明確設定 auto_adjust=False，以保留 'Adj Close' 欄位
-    prices = yf.download(tickers, start=start_date, end=end_date, auto_adjust=False)['Adj Close']
+    tickers = ['2330.TW', '2317.TW', '2454.TW']
+    start = (datetime.today() - timedelta(days=365)).strftime('%Y-%m-%d')
+    end = datetime.today().strftime('%Y-%m-%d')
+    prices = yf.download(tickers, start=start, end=end, auto_adjust=False)['Adj Close']
 
     model = AiMeanVariancePortfolio(tickers, prices)
     model.fetch_fundamentals()
