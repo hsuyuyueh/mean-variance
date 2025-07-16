@@ -6,8 +6,12 @@ import json
 from datetime import datetime
 from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeout
 
-CACHE_DIR = "./cache"
+from datetime import datetime
+RUN_DATE = datetime.today().strftime("%Y%m%d")
+OUTPUT_ROOT = os.path.join("outputs", RUN_DATE)
+CACHE_DIR = os.path.join(OUTPUT_ROOT, "fetch_cache")
 os.makedirs(CACHE_DIR, exist_ok=True)
+
 
 def fetch_0050_components():
     today = datetime.today().strftime("%Y%m%d")

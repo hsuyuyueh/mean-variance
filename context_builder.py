@@ -7,7 +7,11 @@ import hashlib
 
 PERPLEXITY_API_URL = "https://api.perplexity.ai/chat/completions"
 PERPLEXITY_MODEL = "sonar"
-CACHE_PATH = "./context_cache"
+from datetime import datetime
+RUN_DATE = datetime.today().strftime('%Y%m%d')
+CACHE_PATH = os.path.join("./outputs", RUN_DATE, "context_cache")
+os.makedirs(CACHE_PATH, exist_ok=True)
+
 
 os.makedirs(CACHE_PATH, exist_ok=True)
 

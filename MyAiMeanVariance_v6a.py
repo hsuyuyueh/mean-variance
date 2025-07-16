@@ -20,9 +20,10 @@ from my_ai_module import gpt_contextual_rating
 
 nest_asyncio.apply()
 
-# 建立 cache 資料夾
-CACHE_DIR = "./cache"
-os.makedirs(CACHE_DIR, exist_ok=True)
+# 輸出根目錄：使用當天日期
+RUN_DATE = datetime.today().strftime('%Y%m%d')
+OUTPUT_ROOT = os.path.join("./outputs", RUN_DATE)
+os.makedirs(OUTPUT_ROOT, exist_ok=True)
 
 class AiMeanVariancePortfolio:
     def __init__(self, tickers, prices, profile_level='P3'):
@@ -37,8 +38,7 @@ class AiMeanVariancePortfolio:
         self.target_return = None
 
     def fetch_fundamentals(self):
-        today = datetime.today().strftime('%Y%m%d')
-        cache_file = os.path.join(CACHE_DIR, f"fundamentals_{today}.json")
+        cache_file = os.path.join(OUTPUT_ROOT, f"fundamentals_{RUN_DATE}.json")
         if os.path.exists(cache_file):
             print(f"[快取] 載入基本面資料：{cache_file}")
             self.fundamentals = pd.read_json(cache_file)
@@ -47,7 +47,10 @@ class AiMeanVariancePortfolio:
         for tk in tqdm(self.tickers, desc="抓取基本面資料"):
             try:
                 info = yf.Ticker(tk).info
-                fundamentals[tk] = {'pe': info.get('trailingPE', 20), 'roe': info.get('returnOnEquity', 0.1)*100}
+                fundamentals[tk] = {
+                    'pe': info.get('trailingPE', 20),
+                    'roe': info.get('returnOnEquity', 0.1) * 100
+                }
             except:
                 fundamentals[tk] = {'pe': 20, 'roe': 10}
         df = pd.DataFrame.from_dict(fundamentals, orient='index')
@@ -56,18 +59,9 @@ class AiMeanVariancePortfolio:
         self.fundamentals = df
 
     def build_mu(self):
-        mu_base = gpt_contextual_rating(self.tickers, horizon_months=3)
-        pe_scaled = 1 / (self.fundamentals['pe'] + 5)
-        roe_scaled = self.fundamentals['roe'] / 20
-        adj_factor = 0.5 * pe_scaled + 0.5 * roe_scaled
-        mu_style = mu_base * adj_factor
-        lookback = min(60, len(self.prices))
-        mu_momentum = mu_style
-        if lookback >= 60:
-            mu_momentum = mu_style * (1 + 0.3 * ((self.prices.iloc[-1] / self.prices.iloc[-lookback]) - 1))
-        vol = self.prices.pct_change().rolling(60).std().mean().fillna(0)
-        scaled = 1 / (1 + 0.5 * vol)
-        self.mu_final = mu_momentum * scaled
+        cache_file = os.path.join(OUTPUT_ROOT, f"default_mu_cache_{RUN_DATE}.json")
+        # my_ai_module 已做日期快取，可選擇讀寫此檔
+        self.mu_final = gpt_contextual_rating(self.tickers, force=False)
 
     def optimize(self):
         sigma = exp_cov(self.prices, span=180)
@@ -83,6 +77,7 @@ class AiMeanVariancePortfolio:
         ef2.efficient_return(target_return=self.target_return)
         self.weights = ef2.clean_weights()
         self.performance = ef2.portfolio_performance(risk_free_rate=self.rf_rate, verbose=False)
+
         beta = self.estimate_portfolio_beta()
         print("\n=== 最佳化結果 (class 模式) ===\n")
         print(f"→ 投組 β：{beta}")
@@ -111,8 +106,9 @@ class AiMeanVariancePortfolio:
                 betas[tk] = 1.0
         return round(sum(self.weights.get(tk,0)*betas.get(tk,1) for tk in self.tickers), 2)
 
-    def save_weights(self, filepath="current_portfolio.json"):
-        with open(filepath, 'w') as f:
+    def save_weights(self, filepath=None):
+        path = filepath or os.path.join(OUTPUT_ROOT, "current_portfolio.json")
+        with open(path, 'w') as f:
             json.dump(self.weights, f, indent=2)
 
     def backtest(self, rebalance_freq='2W'):
@@ -146,19 +142,21 @@ class AiMeanVariancePortfolio:
             except:
                 continue
         df = pd.DataFrame(results)
-        df.to_json("backtest_report.json", indent=2)
-        df.to_excel("backtest_report.xlsx", index=False)
+        bt_json = os.path.join(OUTPUT_ROOT, "backtest_report.json")
+        bt_xlsx = os.path.join(OUTPUT_ROOT, "backtest_report.xlsx")
+        df.to_json(bt_json, indent=2)
+        df.to_excel(bt_xlsx, index=False)
         plt.figure(figsize=(10, 4))
         plt.plot(df['date'], df['sharpe'], marker='o')
         plt.xticks(rotation=45)
         plt.tight_layout()
-        plt.savefig("sharpe_trend.png")
+        plt.savefig(os.path.join(OUTPUT_ROOT, "sharpe_trend.png"))
         return df
 
 if __name__ == '__main__':
     components = list({tk: name for tk, name in fetch_0050_components() + fetch_0056_components()}.items())
     tickers = [tk for tk, name in components if not tk.startswith("289")]
-    tickers = ['2330.TW', '2317.TW', '2454.TW']
+    # tickers = ['2330.TW', '2317.TW', '2454.TW']
     start = (datetime.today() - timedelta(days=365)).strftime('%Y-%m-%d')
     end = datetime.today().strftime('%Y-%m-%d')
     prices = yf.download(tickers, start=start, end=end, auto_adjust=False)['Adj Close']

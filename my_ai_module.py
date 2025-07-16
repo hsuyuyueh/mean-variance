@@ -11,7 +11,12 @@ api_key = os.getenv("OPENAI_API_KEY")
 client = OpenAI(api_key=api_key)
 
 # 快取檔案位置
-CACHE_FILE = "./default_mu_cache.json"
+from datetime import datetime
+RUN_DATE = datetime.today().strftime('%Y%m%d')
+BASE_DIR = os.path.join("./outputs", RUN_DATE)
+os.makedirs(BASE_DIR, exist_ok=True)
+CACHE_FILE = os.path.join(BASE_DIR, "default_mu_cache.json")
+
 
 def load_cache():
     if os.path.exists(CACHE_FILE):
