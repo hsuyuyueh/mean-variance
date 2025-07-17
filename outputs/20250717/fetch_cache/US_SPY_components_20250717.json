@@ -1,0 +1,2018 @@
+[
+  [
+    "NVDA.US",
+    "NVIDIA CORP"
+  ],
+  [
+    "MSFT.US",
+    "MICROSOFT CORP"
+  ],
+  [
+    "AAPL.US",
+    "APPLE INC"
+  ],
+  [
+    "AMZN.US",
+    "AMAZON.COM INC"
+  ],
+  [
+    "META.US",
+    "META PLATFORMS INC CLASS A"
+  ],
+  [
+    "AVGO.US",
+    "BROADCOM INC"
+  ],
+  [
+    "GOOGL.US",
+    "ALPHABET INC CL A"
+  ],
+  [
+    "BRK.B.US",
+    "BERKSHIRE HATHAWAY INC CL B"
+  ],
+  [
+    "TSLA.US",
+    "TESLA INC"
+  ],
+  [
+    "GOOG.US",
+    "ALPHABET INC CL C"
+  ],
+  [
+    "JPM.US",
+    "JPMORGAN CHASE + CO"
+  ],
+  [
+    "LLY.US",
+    "ELI LILLY + CO"
+  ],
+  [
+    "V.US",
+    "VISA INC CLASS A SHARES"
+  ],
+  [
+    "NFLX.US",
+    "NETFLIX INC"
+  ],
+  [
+    "XOM.US",
+    "EXXON MOBIL CORP"
+  ],
+  [
+    "MA.US",
+    "MASTERCARD INC   A"
+  ],
+  [
+    "COST.US",
+    "COSTCO WHOLESALE CORP"
+  ],
+  [
+    "WMT.US",
+    "WALMART INC"
+  ],
+  [
+    "PG.US",
+    "PROCTER + GAMBLE CO/THE"
+  ],
+  [
+    "JNJ.US",
+    "JOHNSON + JOHNSON"
+  ],
+  [
+    "HD.US",
+    "HOME DEPOT INC"
+  ],
+  [
+    "ORCL.US",
+    "ORACLE CORP"
+  ],
+  [
+    "ABBV.US",
+    "ABBVIE INC"
+  ],
+  [
+    "BAC.US",
+    "BANK OF AMERICA CORP"
+  ],
+  [
+    "PLTR.US",
+    "PALANTIR TECHNOLOGIES INC A"
+  ],
+  [
+    "PM.US",
+    "PHILIP MORRIS INTERNATIONAL"
+  ],
+  [
+    "UNH.US",
+    "UNITEDHEALTH GROUP INC"
+  ],
+  [
+    "CSCO.US",
+    "CISCO SYSTEMS INC"
+  ],
+  [
+    "GE.US",
+    "GENERAL ELECTRIC"
+  ],
+  [
+    "KO.US",
+    "COCA COLA CO/THE"
+  ],
+  [
+    "IBM.US",
+    "INTL BUSINESS MACHINES CORP"
+  ],
+  [
+    "CRM.US",
+    "SALESFORCE INC"
+  ],
+  [
+    "WFC.US",
+    "WELLS FARGO + CO"
+  ],
+  [
+    "ABT.US",
+    "ABBOTT LABORATORIES"
+  ],
+  [
+    "CVX.US",
+    "CHEVRON CORP"
+  ],
+  [
+    "AMD.US",
+    "ADVANCED MICRO DEVICES"
+  ],
+  [
+    "DIS.US",
+    "WALT DISNEY CO/THE"
+  ],
+  [
+    "LIN.US",
+    "LINDE PLC"
+  ],
+  [
+    "INTU.US",
+    "INTUIT INC"
+  ],
+  [
+    "GS.US",
+    "GOLDMAN SACHS GROUP INC"
+  ],
+  [
+    "NOW.US",
+    "SERVICENOW INC"
+  ],
+  [
+    "MCD.US",
+    "MCDONALD S CORP"
+  ],
+  [
+    "T.US",
+    "AT+T INC"
+  ],
+  [
+    "MRK.US",
+    "MERCK + CO. INC."
+  ],
+  [
+    "UBER.US",
+    "UBER TECHNOLOGIES INC"
+  ],
+  [
+    "RTX.US",
+    "RTX CORP"
+  ],
+  [
+    "ISRG.US",
+    "INTUITIVE SURGICAL INC"
+  ],
+  [
+    "TXN.US",
+    "TEXAS INSTRUMENTS INC"
+  ],
+  [
+    "BKNG.US",
+    "BOOKING HOLDINGS INC"
+  ],
+  [
+    "ACN.US",
+    "ACCENTURE PLC CL A"
+  ],
+  [
+    "CAT.US",
+    "CATERPILLAR INC"
+  ],
+  [
+    "VZ.US",
+    "VERIZON COMMUNICATIONS INC"
+  ],
+  [
+    "PEP.US",
+    "PEPSICO INC"
+  ],
+  [
+    "AXP.US",
+    "AMERICAN EXPRESS CO"
+  ],
+  [
+    "QCOM.US",
+    "QUALCOMM INC"
+  ],
+  [
+    "MS.US",
+    "MORGAN STANLEY"
+  ],
+  [
+    "SPGI.US",
+    "S+P GLOBAL INC"
+  ],
+  [
+    "ADBE.US",
+    "ADOBE INC"
+  ],
+  [
+    "C.US",
+    "CITIGROUP INC"
+  ],
+  [
+    "BSX.US",
+    "BOSTON SCIENTIFIC CORP"
+  ],
+  [
+    "BA.US",
+    "BOEING CO/THE"
+  ],
+  [
+    "PGR.US",
+    "PROGRESSIVE CORP"
+  ],
+  [
+    "SCHW.US",
+    "SCHWAB (CHARLES) CORP"
+  ],
+  [
+    "TMO.US",
+    "THERMO FISHER SCIENTIFIC INC"
+  ],
+  [
+    "BLK.US",
+    "BLACKROCK INC"
+  ],
+  [
+    "AMGN.US",
+    "AMGEN INC"
+  ],
+  [
+    "HON.US",
+    "HONEYWELL INTERNATIONAL INC"
+  ],
+  [
+    "AMAT.US",
+    "APPLIED MATERIALS INC"
+  ],
+  [
+    "GEV.US",
+    "GE VERNOVA INC"
+  ],
+  [
+    "NEE.US",
+    "NEXTERA ENERGY INC"
+  ],
+  [
+    "ETN.US",
+    "EATON CORP PLC"
+  ],
+  [
+    "TJX.US",
+    "TJX COMPANIES INC"
+  ],
+  [
+    "PFE.US",
+    "PFIZER INC"
+  ],
+  [
+    "GILD.US",
+    "GILEAD SCIENCES INC"
+  ],
+  [
+    "MU.US",
+    "MICRON TECHNOLOGY INC"
+  ],
+  [
+    "UNP.US",
+    "UNION PACIFIC CORP"
+  ],
+  [
+    "SYK.US",
+    "STRYKER CORP"
+  ],
+  [
+    "COF.US",
+    "CAPITAL ONE FINANCIAL CORP"
+  ],
+  [
+    "PANW.US",
+    "PALO ALTO NETWORKS INC"
+  ],
+  [
+    "CMCSA.US",
+    "COMCAST CORP CLASS A"
+  ],
+  [
+    "DE.US",
+    "DEERE + CO"
+  ],
+  [
+    "CRWD.US",
+    "CROWDSTRIKE HOLDINGS INC   A"
+  ],
+  [
+    "DHR.US",
+    "DANAHER CORP"
+  ],
+  [
+    "ADP.US",
+    "AUTOMATIC DATA PROCESSING"
+  ],
+  [
+    "LRCX.US",
+    "LAM RESEARCH CORP"
+  ],
+  [
+    "LOW.US",
+    "LOWE S COS INC"
+  ],
+  [
+    "APH.US",
+    "AMPHENOL CORP CL A"
+  ],
+  [
+    "KLAC.US",
+    "KLA CORP"
+  ],
+  [
+    "ADI.US",
+    "ANALOG DEVICES INC"
+  ],
+  [
+    "VRTX.US",
+    "VERTEX PHARMACEUTICALS INC"
+  ],
+  [
+    "TMUS.US",
+    "T MOBILE US INC"
+  ],
+  [
+    "COP.US",
+    "CONOCOPHILLIPS"
+  ],
+  [
+    "MDT.US",
+    "MEDTRONIC PLC"
+  ],
+  [
+    "BX.US",
+    "BLACKSTONE INC"
+  ],
+  [
+    "CB.US",
+    "CHUBB LTD"
+  ],
+  [
+    "MMC.US",
+    "MARSH + MCLENNAN COS"
+  ],
+  [
+    "ANET.US",
+    "ARISTA NETWORKS INC"
+  ],
+  [
+    "ICE.US",
+    "INTERCONTINENTAL EXCHANGE IN"
+  ],
+  [
+    "SBUX.US",
+    "STARBUCKS CORP"
+  ],
+  [
+    "AMT.US",
+    "AMERICAN TOWER CORP"
+  ],
+  [
+    "CEG.US",
+    "CONSTELLATION ENERGY"
+  ],
+  [
+    "SO.US",
+    "SOUTHERN CO/THE"
+  ],
+  [
+    "CME.US",
+    "CME GROUP INC"
+  ],
+  [
+    "MO.US",
+    "ALTRIA GROUP INC"
+  ],
+  [
+    "INTC.US",
+    "INTEL CORP"
+  ],
+  [
+    "PLD.US",
+    "PROLOGIS INC"
+  ],
+  [
+    "TT.US",
+    "TRANE TECHNOLOGIES PLC"
+  ],
+  [
+    "LMT.US",
+    "LOCKHEED MARTIN CORP"
+  ],
+  [
+    "FI.US",
+    "FISERV INC"
+  ],
+  [
+    "WELL.US",
+    "WELLTOWER INC"
+  ],
+  [
+    "BMY.US",
+    "BRISTOL MYERS SQUIBB CO"
+  ],
+  [
+    "DUK.US",
+    "DUKE ENERGY CORP"
+  ],
+  [
+    "MCK.US",
+    "MCKESSON CORP"
+  ],
+  [
+    "KKR.US",
+    "KKR + CO INC"
+  ],
+  [
+    "PH.US",
+    "PARKER HANNIFIN CORP"
+  ],
+  [
+    "CI.US",
+    "THE CIGNA GROUP"
+  ],
+  [
+    "ELV.US",
+    "ELEVANCE HEALTH INC"
+  ],
+  [
+    "MDLZ.US",
+    "MONDELEZ INTERNATIONAL INC A"
+  ],
+  [
+    "CVS.US",
+    "CVS HEALTH CORP"
+  ],
+  [
+    "TDG.US",
+    "TRANSDIGM GROUP INC"
+  ],
+  [
+    "DASH.US",
+    "DOORDASH INC   A"
+  ],
+  [
+    "CDNS.US",
+    "CADENCE DESIGN SYS INC"
+  ],
+  [
+    "WM.US",
+    "WASTE MANAGEMENT INC"
+  ],
+  [
+    "NKE.US",
+    "NIKE INC  CL B"
+  ],
+  [
+    "MMM.US",
+    "3M CO"
+  ],
+  [
+    "AJG.US",
+    "ARTHUR J GALLAGHER + CO"
+  ],
+  [
+    "SNPS.US",
+    "SYNOPSYS INC"
+  ],
+  [
+    "SHW.US",
+    "SHERWIN WILLIAMS CO/THE"
+  ],
+  [
+    "RCL.US",
+    "ROYAL CARIBBEAN CRUISES LTD"
+  ],
+  [
+    "EQIX.US",
+    "EQUINIX INC"
+  ],
+  [
+    "MCO.US",
+    "MOODY S CORP"
+  ],
+  [
+    "ORLY.US",
+    "O REILLY AUTOMOTIVE INC"
+  ],
+  [
+    "AON.US",
+    "AON PLC CLASS A"
+  ],
+  [
+    "WMB.US",
+    "WILLIAMS COS INC"
+  ],
+  [
+    "CTAS.US",
+    "CINTAS CORP"
+  ],
+  [
+    "CMG.US",
+    "CHIPOTLE MEXICAN GRILL INC"
+  ],
+  [
+    "HWM.US",
+    "HOWMET AEROSPACE INC"
+  ],
+  [
+    "EMR.US",
+    "EMERSON ELECTRIC CO"
+  ],
+  [
+    "COIN.US",
+    "COINBASE GLOBAL INC  CLASS A"
+  ],
+  [
+    "UPS.US",
+    "UNITED PARCEL SERVICE CL B"
+  ],
+  [
+    "PNC.US",
+    "PNC FINANCIAL SERVICES GROUP"
+  ],
+  [
+    "CL.US",
+    "COLGATE PALMOLIVE CO"
+  ],
+  [
+    "GD.US",
+    "GENERAL DYNAMICS CORP"
+  ],
+  [
+    "PYPL.US",
+    "PAYPAL HOLDINGS INC"
+  ],
+  [
+    "USB.US",
+    "US BANCORP"
+  ],
+  [
+    "MSI.US",
+    "MOTOROLA SOLUTIONS INC"
+  ],
+  [
+    "JCI.US",
+    "JOHNSON CONTROLS INTERNATION"
+  ],
+  [
+    "ZTS.US",
+    "ZOETIS INC"
+  ],
+  [
+    "ECL.US",
+    "ECOLAB INC"
+  ],
+  [
+    "NOC.US",
+    "NORTHROP GRUMMAN CORP"
+  ],
+  [
+    "FTNT.US",
+    "FORTINET INC"
+  ],
+  [
+    "HCA.US",
+    "HCA HEALTHCARE INC"
+  ],
+  [
+    "ADSK.US",
+    "AUTODESK INC"
+  ],
+  [
+    "ITW.US",
+    "ILLINOIS TOOL WORKS"
+  ],
+  [
+    "VST.US",
+    "VISTRA CORP"
+  ],
+  [
+    "EOG.US",
+    "EOG RESOURCES INC"
+  ],
+  [
+    "BK.US",
+    "BANK OF NEW YORK MELLON CORP"
+  ],
+  [
+    "NEM.US",
+    "NEWMONT CORP"
+  ],
+  [
+    "APO.US",
+    "APOLLO GLOBAL MANAGEMENT INC"
+  ],
+  [
+    "HLT.US",
+    "HILTON WORLDWIDE HOLDINGS IN"
+  ],
+  [
+    "APD.US",
+    "AIR PRODUCTS + CHEMICALS INC"
+  ],
+  [
+    "AZO.US",
+    "AUTOZONE INC"
+  ],
+  [
+    "FCX.US",
+    "FREEPORT MCMORAN INC"
+  ],
+  [
+    "MAR.US",
+    "MARRIOTT INTERNATIONAL  CL A"
+  ],
+  [
+    "CSX.US",
+    "CSX CORP"
+  ],
+  [
+    "AXON.US",
+    "AXON ENTERPRISE INC"
+  ],
+  [
+    "ROP.US",
+    "ROPER TECHNOLOGIES INC"
+  ],
+  [
+    "TRV.US",
+    "TRAVELERS COS INC/THE"
+  ],
+  [
+    "CARR.US",
+    "CARRIER GLOBAL CORP"
+  ],
+  [
+    "NSC.US",
+    "NORFOLK SOUTHERN CORP"
+  ],
+  [
+    "ABNB.US",
+    "AIRBNB INC CLASS A"
+  ],
+  [
+    "KMI.US",
+    "KINDER MORGAN INC"
+  ],
+  [
+    "TFC.US",
+    "TRUIST FINANCIAL CORP"
+  ],
+  [
+    "PWR.US",
+    "QUANTA SERVICES INC"
+  ],
+  [
+    "AEP.US",
+    "AMERICAN ELECTRIC POWER"
+  ],
+  [
+    "DLR.US",
+    "DIGITAL REALTY TRUST INC"
+  ],
+  [
+    "NXPI.US",
+    "NXP SEMICONDUCTORS NV"
+  ],
+  [
+    "REGN.US",
+    "REGENERON PHARMACEUTICALS"
+  ],
+  [
+    "ALL.US",
+    "ALLSTATE CORP"
+  ],
+  [
+    "WDAY.US",
+    "WORKDAY INC CLASS A"
+  ],
+  [
+    "O.US",
+    "REALTY INCOME CORP"
+  ],
+  [
+    "COR.US",
+    "CENCORA INC"
+  ],
+  [
+    "AFL.US",
+    "AFLAC INC"
+  ],
+  [
+    "MPC.US",
+    "MARATHON PETROLEUM CORP"
+  ],
+  [
+    "OKE.US",
+    "ONEOK INC"
+  ],
+  [
+    "AMP.US",
+    "AMERIPRISE FINANCIAL INC"
+  ],
+  [
+    "CTVA.US",
+    "CORTEVA INC"
+  ],
+  [
+    "FDX.US",
+    "FEDEX CORP"
+  ],
+  [
+    "TEL.US",
+    "TE CONNECTIVITY PLC"
+  ],
+  [
+    "RSG.US",
+    "REPUBLIC SERVICES INC"
+  ],
+  [
+    "PCAR.US",
+    "PACCAR INC"
+  ],
+  [
+    "SRE.US",
+    "SEMPRA"
+  ],
+  [
+    "BDX.US",
+    "BECTON DICKINSON AND CO"
+  ],
+  [
+    "AIG.US",
+    "AMERICAN INTERNATIONAL GROUP"
+  ],
+  [
+    "SPG.US",
+    "SIMON PROPERTY GROUP INC"
+  ],
+  [
+    "URI.US",
+    "UNITED RENTALS INC"
+  ],
+  [
+    "PSX.US",
+    "PHILLIPS 66"
+  ],
+  [
+    "FAST.US",
+    "FASTENAL CO"
+  ],
+  [
+    "D.US",
+    "DOMINION ENERGY INC"
+  ],
+  [
+    "GM.US",
+    "GENERAL MOTORS CO"
+  ],
+  [
+    "LHX.US",
+    "L3HARRIS TECHNOLOGIES INC"
+  ],
+  [
+    "PAYX.US",
+    "PAYCHEX INC"
+  ],
+  [
+    "PSA.US",
+    "PUBLIC STORAGE"
+  ],
+  [
+    "SLB.US",
+    "SCHLUMBERGER LTD"
+  ],
+  [
+    "EW.US",
+    "EDWARDS LIFESCIENCES CORP"
+  ],
+  [
+    "GWW.US",
+    "WW GRAINGER INC"
+  ],
+  [
+    "MET.US",
+    "METLIFE INC"
+  ],
+  [
+    "CMI.US",
+    "CUMMINS INC"
+  ],
+  [
+    "CCI.US",
+    "CROWN CASTLE INC"
+  ],
+  [
+    "KDP.US",
+    "KEURIG DR PEPPER INC"
+  ],
+  [
+    "TGT.US",
+    "TARGET CORP"
+  ],
+  [
+    "MSCI.US",
+    "MSCI INC"
+  ],
+  [
+    "FICO.US",
+    "FAIR ISAAC CORP"
+  ],
+  [
+    "MNST.US",
+    "MONSTER BEVERAGE CORP"
+  ],
+  [
+    "KR.US",
+    "KROGER CO"
+  ],
+  [
+    "EXC.US",
+    "EXELON CORP"
+  ],
+  [
+    "VRSK.US",
+    "VERISK ANALYTICS INC"
+  ],
+  [
+    "CPRT.US",
+    "COPART INC"
+  ],
+  [
+    "IDXX.US",
+    "IDEXX LABORATORIES INC"
+  ],
+  [
+    "FIS.US",
+    "FIDELITY NATIONAL INFO SERV"
+  ],
+  [
+    "KMB.US",
+    "KIMBERLY CLARK CORP"
+  ],
+  [
+    "F.US",
+    "FORD MOTOR CO"
+  ],
+  [
+    "VLO.US",
+    "VALERO ENERGY CORP"
+  ],
+  [
+    "ROST.US",
+    "ROSS STORES INC"
+  ],
+  [
+    "PEG.US",
+    "PUBLIC SERVICE ENTERPRISE GP"
+  ],
+  [
+    "AME.US",
+    "AMETEK INC"
+  ],
+  [
+    "YUM.US",
+    "YUM  BRANDS INC"
+  ],
+  [
+    "CBRE.US",
+    "CBRE GROUP INC   A"
+  ],
+  [
+    "TTWO.US",
+    "TAKE TWO INTERACTIVE SOFTWRE"
+  ],
+  [
+    "GLW.US",
+    "CORNING INC"
+  ],
+  [
+    "KVUE.US",
+    "KENVUE INC"
+  ],
+  [
+    "CAH.US",
+    "CARDINAL HEALTH INC"
+  ],
+  [
+    "XEL.US",
+    "XCEL ENERGY INC"
+  ],
+  [
+    "OTIS.US",
+    "OTIS WORLDWIDE CORP"
+  ],
+  [
+    "CHTR.US",
+    "CHARTER COMMUNICATIONS INC A"
+  ],
+  [
+    "CTSH.US",
+    "COGNIZANT TECH SOLUTIONS A"
+  ],
+  [
+    "HES.US",
+    "HESS CORP"
+  ],
+  [
+    "PRU.US",
+    "PRUDENTIAL FINANCIAL INC"
+  ],
+  [
+    "BKR.US",
+    "BAKER HUGHES CO"
+  ],
+  [
+    "RMD.US",
+    "RESMED INC"
+  ],
+  [
+    "MCHP.US",
+    "MICROCHIP TECHNOLOGY INC"
+  ],
+  [
+    "TRGP.US",
+    "TARGA RESOURCES CORP"
+  ],
+  [
+    "ROK.US",
+    "ROCKWELL AUTOMATION INC"
+  ],
+  [
+    "ETR.US",
+    "ENTERGY CORP"
+  ],
+  [
+    "NDAQ.US",
+    "NASDAQ INC"
+  ],
+  [
+    "DELL.US",
+    "DELL TECHNOLOGIES  C"
+  ],
+  [
+    "SYY.US",
+    "SYSCO CORP"
+  ],
+  [
+    "EA.US",
+    "ELECTRONIC ARTS INC"
+  ],
+  [
+    "ED.US",
+    "CONSOLIDATED EDISON INC"
+  ],
+  [
+    "HIG.US",
+    "HARTFORD INSURANCE GROUP INC"
+  ],
+  [
+    "WAB.US",
+    "WABTEC CORP"
+  ],
+  [
+    "DHI.US",
+    "DR HORTON INC"
+  ],
+  [
+    "EQT.US",
+    "EQT CORP"
+  ],
+  [
+    "MPWR.US",
+    "MONOLITHIC POWER SYSTEMS INC"
+  ],
+  [
+    "VICI.US",
+    "VICI PROPERTIES INC"
+  ],
+  [
+    "VMC.US",
+    "VULCAN MATERIALS CO"
+  ],
+  [
+    "EBAY.US",
+    "EBAY INC"
+  ],
+  [
+    "DXCM.US",
+    "DEXCOM INC"
+  ],
+  [
+    "ACGL.US",
+    "ARCH CAPITAL GROUP LTD"
+  ],
+  [
+    "CSGP.US",
+    "COSTAR GROUP INC"
+  ],
+  [
+    "GEHC.US",
+    "GE HEALTHCARE TECHNOLOGY"
+  ],
+  [
+    "A.US",
+    "AGILENT TECHNOLOGIES INC"
+  ],
+  [
+    "IR.US",
+    "INGERSOLL RAND INC"
+  ],
+  [
+    "WEC.US",
+    "WEC ENERGY GROUP INC"
+  ],
+  [
+    "MLM.US",
+    "MARTIN MARIETTA MATERIALS"
+  ],
+  [
+    "GRMN.US",
+    "GARMIN LTD"
+  ],
+  [
+    "EFX.US",
+    "EQUIFAX INC"
+  ],
+  [
+    "DAL.US",
+    "DELTA AIR LINES INC"
+  ],
+  [
+    "NRG.US",
+    "NRG ENERGY INC"
+  ],
+  [
+    "XYL.US",
+    "XYLEM INC"
+  ],
+  [
+    "EXR.US",
+    "EXTRA SPACE STORAGE INC"
+  ],
+  [
+    "IT.US",
+    "GARTNER INC"
+  ],
+  [
+    "MTB.US",
+    "M + T BANK CORP"
+  ],
+  [
+    "BRO.US",
+    "BROWN + BROWN INC"
+  ],
+  [
+    "ANSS.US",
+    "ANSYS INC"
+  ],
+  [
+    "PCG.US",
+    "P G + E CORP"
+  ],
+  [
+    "STX.US",
+    "SEAGATE TECHNOLOGY HOLDINGS"
+  ],
+  [
+    "WTW.US",
+    "WILLIS TOWERS WATSON PLC"
+  ],
+  [
+    "IRM.US",
+    "IRON MOUNTAIN INC"
+  ],
+  [
+    "ODFL.US",
+    "OLD DOMINION FREIGHT LINE"
+  ],
+  [
+    "STT.US",
+    "STATE STREET CORP"
+  ],
+  [
+    "NUE.US",
+    "NUCOR CORP"
+  ],
+  [
+    "OXY.US",
+    "OCCIDENTAL PETROLEUM CORP"
+  ],
+  [
+    "CCL.US",
+    "CARNIVAL CORP"
+  ],
+  [
+    "HUM.US",
+    "HUMANA INC"
+  ],
+  [
+    "AVB.US",
+    "AVALONBAY COMMUNITIES INC"
+  ],
+  [
+    "DD.US",
+    "DUPONT DE NEMOURS INC"
+  ],
+  [
+    "BR.US",
+    "BROADRIDGE FINANCIAL SOLUTIO"
+  ],
+  [
+    "GIS.US",
+    "GENERAL MILLS INC"
+  ],
+  [
+    "VTR.US",
+    "VENTAS INC"
+  ],
+  [
+    "KEYS.US",
+    "KEYSIGHT TECHNOLOGIES IN"
+  ],
+  [
+    "TSCO.US",
+    "TRACTOR SUPPLY COMPANY"
+  ],
+  [
+    "RJF.US",
+    "RAYMOND JAMES FINANCIAL INC"
+  ],
+  [
+    "FITB.US",
+    "FIFTH THIRD BANCORP"
+  ],
+  [
+    "DTE.US",
+    "DTE ENERGY COMPANY"
+  ],
+  [
+    "AWK.US",
+    "AMERICAN WATER WORKS CO INC"
+  ],
+  [
+    "CNC.US",
+    "CENTENE CORP"
+  ],
+  [
+    "HPE.US",
+    "HEWLETT PACKARD ENTERPRISE"
+  ],
+  [
+    "LULU.US",
+    "LULULEMON ATHLETICA INC"
+  ],
+  [
+    "UAL.US",
+    "UNITED AIRLINES HOLDINGS INC"
+  ],
+  [
+    "IQV.US",
+    "IQVIA HOLDINGS INC"
+  ],
+  [
+    "AEE.US",
+    "AMEREN CORPORATION"
+  ],
+  [
+    "PPG.US",
+    "PPG INDUSTRIES INC"
+  ],
+  [
+    "LEN.US",
+    "LENNAR CORP A"
+  ],
+  [
+    "WBD.US",
+    "WARNER BROS DISCOVERY INC"
+  ],
+  [
+    "GDDY.US",
+    "GODADDY INC   CLASS A"
+  ],
+  [
+    "FANG.US",
+    "DIAMONDBACK ENERGY INC"
+  ],
+  [
+    "DRI.US",
+    "DARDEN RESTAURANTS INC"
+  ],
+  [
+    "TYL.US",
+    "TYLER TECHNOLOGIES INC"
+  ],
+  [
+    "SYF.US",
+    "SYNCHRONY FINANCIAL"
+  ],
+  [
+    "ADM.US",
+    "ARCHER DANIELS MIDLAND CO"
+  ],
+  [
+    "EXE.US",
+    "EXPAND ENERGY CORP"
+  ],
+  [
+    "DG.US",
+    "DOLLAR GENERAL CORP"
+  ],
+  [
+    "SBAC.US",
+    "SBA COMMUNICATIONS CORP"
+  ],
+  [
+    "SMCI.US",
+    "SUPER MICRO COMPUTER INC"
+  ],
+  [
+    "DOV.US",
+    "DOVER CORP"
+  ],
+  [
+    "PPL.US",
+    "PPL CORP"
+  ],
+  [
+    "VLTO.US",
+    "VERALTO CORP"
+  ],
+  [
+    "STZ.US",
+    "CONSTELLATION BRANDS INC A"
+  ],
+  [
+    "NTRS.US",
+    "NORTHERN TRUST CORP"
+  ],
+  [
+    "IP.US",
+    "INTERNATIONAL PAPER CO"
+  ],
+  [
+    "MTD.US",
+    "METTLER TOLEDO INTERNATIONAL"
+  ],
+  [
+    "HSY.US",
+    "HERSHEY CO/THE"
+  ],
+  [
+    "ATO.US",
+    "ATMOS ENERGY CORP"
+  ],
+  [
+    "CBOE.US",
+    "CBOE GLOBAL MARKETS INC"
+  ],
+  [
+    "HBAN.US",
+    "HUNTINGTON BANCSHARES INC"
+  ],
+  [
+    "TDY.US",
+    "TELEDYNE TECHNOLOGIES INC"
+  ],
+  [
+    "CNP.US",
+    "CENTERPOINT ENERGY INC"
+  ],
+  [
+    "LYV.US",
+    "LIVE NATION ENTERTAINMENT IN"
+  ],
+  [
+    "CHD.US",
+    "CHURCH + DWIGHT CO INC"
+  ],
+  [
+    "STE.US",
+    "STERIS PLC"
+  ],
+  [
+    "CDW.US",
+    "CDW CORP/DE"
+  ],
+  [
+    "VRSN.US",
+    "VERISIGN INC"
+  ],
+  [
+    "JBL.US",
+    "JABIL INC"
+  ],
+  [
+    "CPAY.US",
+    "CORPAY INC"
+  ],
+  [
+    "ES.US",
+    "EVERSOURCE ENERGY"
+  ],
+  [
+    "CINF.US",
+    "CINCINNATI FINANCIAL CORP"
+  ],
+  [
+    "HPQ.US",
+    "HP INC"
+  ],
+  [
+    "EQR.US",
+    "EQUITY RESIDENTIAL"
+  ],
+  [
+    "KHC.US",
+    "KRAFT HEINZ CO/THE"
+  ],
+  [
+    "WDC.US",
+    "WESTERN DIGITAL CORP"
+  ],
+  [
+    "PODD.US",
+    "INSULET CORP"
+  ],
+  [
+    "LH.US",
+    "LABCORP HOLDINGS INC"
+  ],
+  [
+    "ON.US",
+    "ON SEMICONDUCTOR"
+  ],
+  [
+    "WRB.US",
+    "WR BERKLEY CORP"
+  ],
+  [
+    "HUBB.US",
+    "HUBBELL INC"
+  ],
+  [
+    "NVR.US",
+    "NVR INC"
+  ],
+  [
+    "NTAP.US",
+    "NETAPP INC"
+  ],
+  [
+    "K.US",
+    "KELLANOVA"
+  ],
+  [
+    "SW.US",
+    "SMURFIT WESTROCK PLC"
+  ],
+  [
+    "TROW.US",
+    "T ROWE PRICE GROUP INC"
+  ],
+  [
+    "PHM.US",
+    "PULTEGROUP INC"
+  ],
+  [
+    "RF.US",
+    "REGIONS FINANCIAL CORP"
+  ],
+  [
+    "ULTA.US",
+    "ULTA BEAUTY INC"
+  ],
+  [
+    "AMCR.US",
+    "AMCOR PLC"
+  ],
+  [
+    "CMS.US",
+    "CMS ENERGY CORP"
+  ],
+  [
+    "WAT.US",
+    "WATERS CORP"
+  ],
+  [
+    "PTC.US",
+    "PTC INC"
+  ],
+  [
+    "FE.US",
+    "FIRSTENERGY CORP"
+  ],
+  [
+    "EXPE.US",
+    "EXPEDIA GROUP INC"
+  ],
+  [
+    "DVN.US",
+    "DEVON ENERGY CORP"
+  ],
+  [
+    "LDOS.US",
+    "LEIDOS HOLDINGS INC"
+  ],
+  [
+    "DGX.US",
+    "QUEST DIAGNOSTICS INC"
+  ],
+  [
+    "WSM.US",
+    "WILLIAMS SONOMA INC"
+  ],
+  [
+    "EIX.US",
+    "EDISON INTERNATIONAL"
+  ],
+  [
+    "TPL.US",
+    "TEXAS PACIFIC LAND CORP"
+  ],
+  [
+    "DLTR.US",
+    "DOLLAR TREE INC"
+  ],
+  [
+    "CFG.US",
+    "CITIZENS FINANCIAL GROUP"
+  ],
+  [
+    "GPN.US",
+    "GLOBAL PAYMENTS INC"
+  ],
+  [
+    "CTRA.US",
+    "COTERRA ENERGY INC"
+  ],
+  [
+    "MKC.US",
+    "MCCORMICK + CO NON VTG SHRS"
+  ],
+  [
+    "NI.US",
+    "NISOURCE INC"
+  ],
+  [
+    "EL.US",
+    "ESTEE LAUDER COMPANIES CL A"
+  ],
+  [
+    "IFF.US",
+    "INTL FLAVORS + FRAGRANCES"
+  ],
+  [
+    "DOW.US",
+    "DOW INC"
+  ],
+  [
+    "INVH.US",
+    "INVITATION HOMES INC"
+  ],
+  [
+    "WY.US",
+    "WEYERHAEUSER CO"
+  ],
+  [
+    "BIIB.US",
+    "BIOGEN INC"
+  ],
+  [
+    "LUV.US",
+    "SOUTHWEST AIRLINES CO"
+  ],
+  [
+    "LII.US",
+    "LENNOX INTERNATIONAL INC"
+  ],
+  [
+    "ESS.US",
+    "ESSEX PROPERTY TRUST INC"
+  ],
+  [
+    "TPR.US",
+    "TAPESTRY INC"
+  ],
+  [
+    "TRMB.US",
+    "TRIMBLE INC"
+  ],
+  [
+    "ZBH.US",
+    "ZIMMER BIOMET HOLDINGS INC"
+  ],
+  [
+    "FTV.US",
+    "FORTIVE CORP"
+  ],
+  [
+    "FSLR.US",
+    "FIRST SOLAR INC"
+  ],
+  [
+    "STLD.US",
+    "STEEL DYNAMICS INC"
+  ],
+  [
+    "HAL.US",
+    "HALLIBURTON CO"
+  ],
+  [
+    "KEY.US",
+    "KEYCORP"
+  ],
+  [
+    "MAA.US",
+    "MID AMERICA APARTMENT COMM"
+  ],
+  [
+    "PNR.US",
+    "PENTAIR PLC"
+  ],
+  [
+    "FFIV.US",
+    "F5 INC"
+  ],
+  [
+    "FDS.US",
+    "FACTSET RESEARCH SYSTEMS INC"
+  ],
+  [
+    "GPC.US",
+    "GENUINE PARTS CO"
+  ],
+  [
+    "PKG.US",
+    "PACKAGING CORP OF AMERICA"
+  ],
+  [
+    "PFG.US",
+    "PRINCIPAL FINANCIAL GROUP"
+  ],
+  [
+    "SNA.US",
+    "SNAP ON INC"
+  ],
+  [
+    "MOH.US",
+    "MOLINA HEALTHCARE INC"
+  ],
+  [
+    "GEN.US",
+    "GEN DIGITAL INC"
+  ],
+  [
+    "L.US",
+    "LOEWS CORP"
+  ],
+  [
+    "TSN.US",
+    "TYSON FOODS INC CL A"
+  ],
+  [
+    "ROL.US",
+    "ROLLINS INC"
+  ],
+  [
+    "WST.US",
+    "WEST PHARMACEUTICAL SERVICES"
+  ],
+  [
+    "J.US",
+    "JACOBS SOLUTIONS INC"
+  ],
+  [
+    "EVRG.US",
+    "EVERGY INC"
+  ],
+  [
+    "ZBRA.US",
+    "ZEBRA TECHNOLOGIES CORP CL A"
+  ],
+  [
+    "EXPD.US",
+    "EXPEDITORS INTL WASH INC"
+  ],
+  [
+    "DECK.US",
+    "DECKERS OUTDOOR CORP"
+  ],
+  [
+    "DPZ.US",
+    "DOMINO S PIZZA INC"
+  ],
+  [
+    "BALL.US",
+    "BALL CORP"
+  ],
+  [
+    "LNT.US",
+    "ALLIANT ENERGY CORP"
+  ],
+  [
+    "BAX.US",
+    "BAXTER INTERNATIONAL INC"
+  ],
+  [
+    "LYB.US",
+    "LYONDELLBASELL INDU CL A"
+  ],
+  [
+    "CF.US",
+    "CF INDUSTRIES HOLDINGS INC"
+  ],
+  [
+    "APTV.US",
+    "APTIV PLC"
+  ],
+  [
+    "LVS.US",
+    "LAS VEGAS SANDS CORP"
+  ],
+  [
+    "CLX.US",
+    "CLOROX COMPANY"
+  ],
+  [
+    "TXT.US",
+    "TEXTRON INC"
+  ],
+  [
+    "EG.US",
+    "EVEREST GROUP LTD"
+  ],
+  [
+    "HOLX.US",
+    "HOLOGIC INC"
+  ],
+  [
+    "TER.US",
+    "TERADYNE INC"
+  ],
+  [
+    "KIM.US",
+    "KIMCO REALTY CORP"
+  ],
+  [
+    "COO.US",
+    "COOPER COS INC/THE"
+  ],
+  [
+    "OMC.US",
+    "OMNICOM GROUP"
+  ],
+  [
+    "AVY.US",
+    "AVERY DENNISON CORP"
+  ],
+  [
+    "MAS.US",
+    "MASCO CORP"
+  ],
+  [
+    "IEX.US",
+    "IDEX CORP"
+  ],
+  [
+    "JNPR.US",
+    "JUNIPER NETWORKS INC"
+  ],
+  [
+    "JKHY.US",
+    "JACK HENRY + ASSOCIATES INC"
+  ],
+  [
+    "BBY.US",
+    "BEST BUY CO INC"
+  ],
+  [
+    "BLDR.US",
+    "BUILDERS FIRSTSOURCE INC"
+  ],
+  [
+    "ALGN.US",
+    "ALIGN TECHNOLOGY INC"
+  ],
+  [
+    "ALLE.US",
+    "ALLEGION PLC"
+  ],
+  [
+    "UDR.US",
+    "UDR INC"
+  ],
+  [
+    "DOC.US",
+    "HEALTHPEAK PROPERTIES INC"
+  ],
+  [
+    "TKO.US",
+    "TKO GROUP HOLDINGS INC"
+  ],
+  [
+    "CPT.US",
+    "CAMDEN PROPERTY TRUST"
+  ],
+  [
+    "FOXA.US",
+    "FOX CORP   CLASS A"
+  ],
+  [
+    "AKAM.US",
+    "AKAMAI TECHNOLOGIES INC"
+  ],
+  [
+    "NDSN.US",
+    "NORDSON CORP"
+  ],
+  [
+    "REG.US",
+    "REGENCY CENTERS CORP"
+  ],
+  [
+    "MOS.US",
+    "MOSAIC CO/THE"
+  ],
+  [
+    "CHRW.US",
+    "C.H. ROBINSON WORLDWIDE INC"
+  ],
+  [
+    "RVTY.US",
+    "REVVITY INC"
+  ],
+  [
+    "PAYC.US",
+    "PAYCOM SOFTWARE INC"
+  ],
+  [
+    "NWSA.US",
+    "NEWS CORP   CLASS A"
+  ],
+  [
+    "JBHT.US",
+    "HUNT (JB) TRANSPRT SVCS INC"
+  ],
+  [
+    "ARE.US",
+    "ALEXANDRIA REAL ESTATE EQUIT"
+  ],
+  [
+    "SWKS.US",
+    "SKYWORKS SOLUTIONS INC"
+  ],
+  [
+    "POOL.US",
+    "POOL CORP"
+  ],
+  [
+    "RL.US",
+    "RALPH LAUREN CORP"
+  ],
+  [
+    "INCY.US",
+    "INCYTE CORP"
+  ],
+  [
+    "HST.US",
+    "HOST HOTELS + RESORTS INC"
+  ],
+  [
+    "BG.US",
+    "BUNGE GLOBAL SA"
+  ],
+  [
+    "PNW.US",
+    "PINNACLE WEST CAPITAL"
+  ],
+  [
+    "SOLV.US",
+    "SOLVENTUM CORP"
+  ],
+  [
+    "VTRS.US",
+    "VIATRIS INC"
+  ],
+  [
+    "SWK.US",
+    "STANLEY BLACK + DECKER INC"
+  ],
+  [
+    "SJM.US",
+    "JM SMUCKER CO/THE"
+  ],
+  [
+    "UHS.US",
+    "UNIVERSAL HEALTH SERVICES B"
+  ],
+  [
+    "KMX.US",
+    "CARMAX INC"
+  ],
+  [
+    "GL.US",
+    "GLOBE LIFE INC"
+  ],
+  [
+    "AIZ.US",
+    "ASSURANT INC"
+  ],
+  [
+    "EPAM.US",
+    "EPAM SYSTEMS INC"
+  ],
+  [
+    "BXP.US",
+    "BXP INC"
+  ],
+  [
+    "CAG.US",
+    "CONAGRA BRANDS INC"
+  ],
+  [
+    "HAS.US",
+    "HASBRO INC"
+  ],
+  [
+    "LKQ.US",
+    "LKQ CORP"
+  ],
+  [
+    "HII.US",
+    "HUNTINGTON INGALLS INDUSTRIE"
+  ],
+  [
+    "MRNA.US",
+    "MODERNA INC"
+  ],
+  [
+    "NCLH.US",
+    "NORWEGIAN CRUISE LINE HOLDIN"
+  ],
+  [
+    "IPG.US",
+    "INTERPUBLIC GROUP OF COS INC"
+  ],
+  [
+    "DAY.US",
+    "DAYFORCE INC"
+  ],
+  [
+    "HSIC.US",
+    "HENRY SCHEIN INC"
+  ],
+  [
+    "HRL.US",
+    "HORMEL FOODS CORP"
+  ],
+  [
+    "ERIE.US",
+    "ERIE INDEMNITY COMPANY CL A"
+  ],
+  [
+    "EMN.US",
+    "EASTMAN CHEMICAL CO"
+  ],
+  [
+    "GNRC.US",
+    "GENERAC HOLDINGS INC"
+  ],
+  [
+    "MKTX.US",
+    "MARKETAXESS HOLDINGS INC"
+  ],
+  [
+    "WYNN.US",
+    "WYNN RESORTS LTD"
+  ],
+  [
+    "WBA.US",
+    "WALGREENS BOOTS ALLIANCE INC"
+  ],
+  [
+    "TAP.US",
+    "MOLSON COORS BEVERAGE CO   B"
+  ],
+  [
+    "TECH.US",
+    "BIO TECHNE CORP"
+  ],
+  [
+    "PARA.US",
+    "PARAMOUNT GLOBAL CLASS B"
+  ],
+  [
+    "AOS.US",
+    "SMITH (A.O.) CORP"
+  ],
+  [
+    "MTCH.US",
+    "MATCH GROUP INC"
+  ],
+  [
+    "AES.US",
+    "AES CORP"
+  ],
+  [
+    "CRL.US",
+    "CHARLES RIVER LABORATORIES"
+  ],
+  [
+    "LW.US",
+    "LAMB WESTON HOLDINGS INC"
+  ],
+  [
+    "ALB.US",
+    "ALBEMARLE CORP"
+  ],
+  [
+    "BEN.US",
+    "FRANKLIN RESOURCES INC"
+  ],
+  [
+    "FRT.US",
+    "FEDERAL REALTY INVS TRUST"
+  ],
+  [
+    "IVZ.US",
+    "INVESCO LTD"
+  ],
+  [
+    "MGM.US",
+    "MGM RESORTS INTERNATIONAL"
+  ],
+  [
+    "FOX.US",
+    "FOX CORP   CLASS B"
+  ],
+  [
+    "APA.US",
+    "APA CORP"
+  ],
+  [
+    "CZR.US",
+    "CAESARS ENTERTAINMENT INC"
+  ],
+  [
+    "CPB.US",
+    "THE CAMPBELL S COMPANY"
+  ],
+  [
+    "DVA.US",
+    "DAVITA INC"
+  ],
+  [
+    "MHK.US",
+    "MOHAWK INDUSTRIES INC"
+  ],
+  [
+    "ENPH.US",
+    "ENPHASE ENERGY INC"
+  ],
+  [
+    "BF.B.US",
+    "BROWN FORMAN CORP CLASS B"
+  ],
+  [
+    "NWS.US",
+    "NEWS CORP   CLASS B"
+  ],
+  [
+    "RAL.US",
+    "RALLIANT CORP"
+  ]
+]
