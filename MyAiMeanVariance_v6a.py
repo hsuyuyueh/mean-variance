@@ -16,6 +16,7 @@ import matplotlib.pyplot as plt
 
 from fetch_0056_components import fetch_0056_components
 from fetch_0050_components import fetch_0050_components
+from fetch_00713_components import fetch_00713_components
 from my_ai_module import gpt_contextual_rating
 
 nest_asyncio.apply()
@@ -154,7 +155,7 @@ class AiMeanVariancePortfolio:
         return df
 
 if __name__ == '__main__':
-    components = list({tk: name for tk, name in fetch_0050_components() + fetch_0056_components()}.items())
+    components = list({tk: name for tk, name in fetch_00713_components() + fetch_0050_components() + fetch_0056_components()}.items())
     tickers = [tk for tk, name in components if not tk.startswith("289")]
     # tickers = ['2330.TW', '2317.TW', '2454.TW']
     start = (datetime.today() - timedelta(days=365)).strftime('%Y-%m-%d')
