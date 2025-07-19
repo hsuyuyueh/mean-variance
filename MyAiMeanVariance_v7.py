@@ -27,8 +27,73 @@ from fetch_US_harvard_components import fetch_US_harvard_components
 from fetch_US_SPY_components import fetch_US_SPY_components
 from my_ai_module import gpt_contextual_rating
 
+import time, requests
+from datetime import date
 
+# ---- 1. 讀取 API Key ----
+ALPHA_VANTAGE_API_KEY = os.getenv("ALPHA_VANTAGE_API_KEY")
+TEJ_API_KEY           = os.getenv("TEJ_API_KEY")
 
+# ---- 2. Rate‐limit 控制 ----
+# Alpha Vantage: 5 calls/minute → 每 call 需 sleep 12s
+def throttle_alpha_vantage():
+    time.sleep(12)
+
+# TEJ: trial 上限 500 calls/day, paid 2000/day → 用簡單的「日計數器」加上最小延遲
+TEJ_DAILY_LIMIT = 500  # 若您已付費，請改為 2000
+TEJ_COUNTER_FILE = "./cache/tej_count.json"
+
+def throttle_tej():
+    today = date.today().isoformat()
+    # 載入計數器
+    if os.path.exists(TEJ_COUNTER_FILE):
+        with open(TEJ_COUNTER_FILE, "r") as f:
+            cnt = json.load(f)
+    else:
+        cnt = {}
+    used = cnt.get(today, 0)
+    if used >= TEJ_DAILY_LIMIT:
+        raise RuntimeError(f"今日 TEJ API 呼叫次數已達上限 ({TEJ_DAILY_LIMIT})")
+    # 更新並儲存
+    cnt[today] = used + 1
+    with open(TEJ_COUNTER_FILE, "w") as f:
+        json.dump(cnt, f)
+    # 每次呼叫小延遲，避免 burst
+    time.sleep(1)
+
+def fetch_fundamentals_tej(ticker):
+    """
+    從 TEJ API 取基本面：PE, ROE, 營收成長率等
+    回傳 dict {'pe': float, 'roe': float, 'rev_growth': float, ...}
+    """
+    throttle_tej()
+    url = f"https://api.tej.com.tw/v1/data/{ticker}/fundamental"
+    headers = {"Authorization": f"Bearer {TEJ_API_KEY}"}
+    resp = requests.get(url, headers=headers, timeout=10)
+    data = resp.json().get("data", [{}])[0]
+    return {
+        'pe':         float(data.get("trailingPE", 0)),
+        'roe':       float(data.get("returnOnEquity", 0)) * 100,
+        'rev_growth': float(data.get("revenueGrowth", 0)) * 100
+    }
+
+def fetch_fundamentals_alpha_vantage(ticker):
+    """
+    從 Alpha Vantage 取基本面 (Company Overview endpoint)
+    """
+    throttle_alpha_vantage()
+    url = (
+      "https://www.alphavantage.co/query"
+      f"?function=OVERVIEW&symbol={ticker}&apikey={ALPHA_VANTAGE_API_KEY}"
+    )
+    resp = requests.get(url, timeout=10)
+    info = resp.json()
+    return {
+        'pe':         float(info.get("PERatio", 0)),
+        'roe':       float(info.get("ReturnOnEquityTTM", 0)),
+        'rev_growth': None  # AV Overview 無提供，或可另 call TIME_SERIES_CUSTOM
+    }
+    
 # --- add this block (after existing imports) -----------------
 
 def _detect_market(self):
@@ -79,21 +144,37 @@ def fetch_price_alphaav(symbol, start, end, api_key, pause=12):
     )
     rows = cur.fetchall()
     if rows:
-        import pandas as pd
         s = pd.Series({r[0]: r[1] for r in rows})
         return s.sort_index()
 
-    # 否則呼叫 Alpha Vantage
-    url = (
-        "https://www.alphavantage.co/query"
-        f"?function=TIME_SERIES_DAILY_ADJUSTED&symbol={symbol}&apikey={api_key}&outputsize=full"
+    # 呼叫 Alpha Vantage
+    resp = requests.get(
+        "https://www.alphavantage.co/query",
+        params={
+            "function": "TIME_SERIES_DAILY_ADJUSTED",
+            "symbol": symbol,
+            "apikey": api_key,
+            "outputsize": "full"
+        },
+        timeout=10
     )
-    r = requests.get(url)
-    data = r.json().get("Time Series (Daily)", {})
-    import pandas as pd
-    df = pd.DataFrame.from_dict(data, orient="index")
+    data = resp.json()
+    ts = data.get("Time Series (Daily)")
+    if not ts:
+        print(f"[警告] Alpha Vantage 無日線資料 for {symbol}: {data.get('Note') or data.get('Error Message')}")
+        return pd.Series(dtype=float)
+
+    df = pd.DataFrame.from_dict(ts, orient="index")
     df.index = pd.to_datetime(df.index)
-    s = df["5. adjusted close"].loc[start:end].astype(float)
+
+    # 找出含 “adjusted close” 的欄位
+    cols = [c for c in df.columns if "adjusted close" in c.lower()]
+    if not cols:
+        print(f"[警告] 找不到調整後收盤價欄位 for {symbol}，Available: {df.columns.tolist()}")
+        return pd.Series(dtype=float)
+
+    s = df[cols[0]].loc[start:end].astype(float)
+
     # 寫入快取
     for dt, val in s.items():
         conn.execute(
@@ -108,11 +189,14 @@ def fetch_price(symbols, start, end, av_api_key):
     prices = {}
     for sym in symbols:
         p = fetch_price_yahoo(sym, start, end)
-        if p is None or p.empty:
-            p = fetch_price_alphaav(sym, start, end, av_api_key)
+        # 只對美股（非 .TW/.T）做 Alpha Vantage fallback
+        if (p is None or p.empty) and not (sym.endswith(".TW") or sym.endswith(".T")):
+            # 先把 MoneyDJ style 的 .US 移除並轉 format
+            sym_av = _normalize_us_ticker(sym)
+            p = fetch_price_alphaav(sym_av, start, end, av_api_key)
+        if p is None:
+            p = pd.Series(dtype=float)
         prices[sym] = p
-    # 回傳一個 pandas.DataFrame
-    import pandas as pd
     return pd.DataFrame(prices)
 
 
@@ -132,21 +216,25 @@ class AiMeanVariancePortfolio:
         self.RUN_DAT = RUN_DATE
 
     def fetch_fundamentals(self):
-        cache_file = os.path.join(OUTPUT_ROOT, f"fundamentals_{self.RUN_DAT}.json")
+        cache_file = os.path.join(self.OUTPUT_ROOT, f"fundamentals_{self.RUN_DAT}.json")
         if os.path.exists(cache_file):
             print(f"[快取] 載入基本面資料：{cache_file}")
             self.fundamentals = pd.read_json(cache_file)
             return
+
         fundamentals = {}
         for tk in tqdm(self.tickers, desc="抓取基本面資料"):
             try:
-                info = yf.Ticker(tk).info
-                fundamentals[tk] = {
-                    'pe': info.get('trailingPE', 20),
-                    'roe': info.get('returnOnEquity', 0.1) * 100
-                }
-            except:
-                fundamentals[tk] = {'pe': 20, 'roe': 10}
+                if self.market == 'TW':
+                    info = fetch_fundamentals_tej(tk)
+                else:
+                    # JP 可套用 Alpha Vantage 或保留原 yfinance
+                    info = fetch_fundamentals_alpha_vantage(tk)
+                fundamentals[tk] = info
+            except Exception as e:
+                print(f"[警告] {tk} 基本面抓取失敗：{e}，使用預設值")
+                fundamentals[tk] = {'pe':20, 'roe':10, 'rev_growth':0}
+
         df = pd.DataFrame.from_dict(fundamentals, orient='index')
         df.to_json(cache_file, force_ascii=False, indent=2)
         print(f"[快取] 已儲存基本面資料至：{cache_file}")
@@ -340,7 +428,7 @@ if __name__ == '__main__':
                            if os.path.exists("manual_jp_list.json") else ["7203.T","9984.T"]
     }
     tickers = MARKET_SOURCES[args.market]()
-    #tickers = ['2330.TW', '2317.TW', '2454.TW']
+    tickers = ['2330.TW', '2317.TW', '2454.TW']
     if args.market == "US":                       # 只清美股
         tickers = sorted({ _normalize_us_ticker(t) for t in tickers })
     start   = (datetime.today() - timedelta(days=365)).strftime('%Y-%m-%d')

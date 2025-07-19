@@ -49,7 +49,7 @@ def gpt_contextual_rating(tickers, base_mu=None, tech_indicators=None, model="gp
         base_prompt = "你是一位資深財經分析師，請評估下列股票的預期報酬率。"
 
     for tk in tqdm(tickers, desc=f"預測 {horizon_months} 個月 μ 值"):
-        #context = base_prompt + "\n" + build_context_bundle(tk, horizon_months, OUTPUT_ROOT)
+        context = base_prompt + "\n" + build_context_bundle(tk, horizon_months, OUTPUT_ROOT)
         key = f"{tk}::{horizon_months}::{hash(context)}"
 
         if not force and key in cache:

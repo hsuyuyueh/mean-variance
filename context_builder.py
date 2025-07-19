@@ -104,17 +104,20 @@ def build_context_bundle(ticker: str, horizon_months: int = 3, OUTPUT_ROOT="./ou
             risk_flags.append(word)
     risk_summary = ", ".join(risk_flags) if risk_flags else "未偵測到重大風險關鍵字"
     roe_text = f"{roe*100:.2f}%" if roe is not None else "N/A"
-
+    annual_ret_text = f"{annual_ret*100:.2f}%" if annual_ret is not None else "N/A"
+    annual_vol_text = f"{annual_vol*100:.2f}%" if annual_vol is not None else "N/A"
+    pe_text = f"{pe*100:.2f}%" if pe is not None else "N/A"
+    rev_growth_text = f"{rev_growth*100:.2f}%" if rev_growth is not None else "N/A"
     context = f"""
 📌 股票代號：{ticker}（{name}）
 產業：{sector}／{industry}
 ▶ 歷史量化統計（過去 {horizon_months} 月）：  
-  • 年化報酬率：{annual_ret:.2% if annual_ret is not None else 'N/A'}  
-  • 年化波動率：{annual_vol:.2% if annual_vol is not None else 'N/A'}  
+  • 年化報酬率：{annual_ret_text}  
+  • 年化波動率：{annual_vol_text}  
 ▶ 基本面指標：  
-  • P/E：{pe:.2f if pe is not None else 'N/A'}  
+  • P/E：{pe_text}  
   • ROE：{roe_text}  
-  • 營收成長率：{rev_growth:.2% if rev_growth is not None else 'N/A'}  
+  • 營收成長率：{rev_growth_text}  
 資料蒐集區間：過去 {horizon_months} 個月重大新聞：  
 {news_section}
 
