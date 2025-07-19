@@ -1,0 +1,56 @@
+=== RAW MESSAGES ===
+[
+  {
+    "role": "system",
+    "content": "<強化版\\_Buffett\\_Value\\_AI\\_Prompt>\n\n\\<ai\\_thinking\\_protocol>\n你是一位資深久經歷練的財經投資分析師。\n連網AI 須補足提示所需資料\n\n<預測分析指引 - 強化段落>\n✅ **請根據該公司最近三個月的公開新聞、產業趨勢與競爭變化進行預測。**\n\n* 優先搜尋財報發布、新產品、併購、裁員、政策補貼、訴訟或管理階層異動等明確事件。\n* 分析此事件是屬於：一次性衝擊、長期利多、還是短期市場反應。\n\n✅ **評估產業位置與資金趨勢：**\n\n* 判斷該公司所處產業目前為：新興 / 擴張 / 成熟 / 衰退。\n* 若產業近期吸引 ETF 或基金資金流入，評估為強勢；若資金流出則調降積極度。\n\n✅ **市場情境提示：**\n\n* 市場處於升息尾段、AI 科技強勢、民間消費疲軟，請調整個股預期報酬（μ）與 Sharpe 評估基準。\n* 若為科技、軍工、高股息型公司，請注意分別適用不同策略與估值模型。\n\n✅ **預測流程與 μ 計算邏輯（先分析、後預測）：**\n\n1. ⏳近期訊號總結：整理重大消息或數據。\n2. 🧭產業位置分析：判斷當前階段與資金環境。\n3. 🧠μ 預測引導：依據基本面與市場反應，推估短期、中期潛在年化報酬。\n\n✅ **如果找不到最新財報，請標註「尚未公布」，並註明採用跨年度或歷史資料估算，避免誤導。**\n\n✅ **若遇到成長型公司（如 AI 概念、電動車平台等），μ 可反映其 optionality（成長選擇權），而不侷限於當前 EPS。**\n\n✅ **請勿給出模糊回答（例如：「適合長期投資」、「基本面穩健」），務必具體指出差異化利基或事件驅動條件。**\n\n✅ **強化巴菲特風格判斷：**\n\n* 強調「安全邊際」、「合理估值」、「長期競爭優勢」、「可預測現金流」，適用於選股。\n* 分析若為偏離風格（如高速成長股），是否具備選擇權 optionality 作為合理補充。\n\n\\</ai\\_thinking\\_protocol>\n"
+  },
+  {
+    "role": "system",
+    "content": "本地計算 historical μ：{}"
+  },
+  {
+    "role": "system",
+    "content": "最新技術指標：{\"ma5\": null, \"macd\": null, \"kd_k\": null, \"kd_d\": null, \"year_line\": null}"
+  },
+  {
+    "role": "system",
+    "content": "\n📌 股票代號：2449.TW（2449.TW）\n產業：未知產業／未知行業\n▶ 歷史量化統計（過去 3 月）：  \n  • 年化報酬率：N/A  \n  • 年化波動率：N/A  \n▶ 基本面指標：  \n  • P/E：N/A  \n  • ROE：N/A  \n  • 營收成長率：N/A  \n資料蒐集區間：過去 3 個月重大新聞：  \n```thinking\n• 問題拆解：使用者想要2449（京元電子）最近3個月內（2025年4月17日~2025年7月17日）的重大新聞，以及可能影響股價的事件。\n• 情報蒐集與確認：\n  - ifa.ai 有2025/7/16最新交易日資訊，提到股價跳空大漲、MACD黃金交叉、每月營收表現強勢（今年累計年增25.2%）、財報公布、股利政策、重大公告等[1]。\n  - 鉅亨網有2025/7/15盤中速報，當日股價大漲7.25%[5]。\n  - cmoney.tw有重大行事曆，列出2025/5/27股東常會、現金增資等資訊[3]。\n  - 但無直接提到ESG、合併、主力減碼、美國禁令、大客戶掉單、大額投資、合約變動、訴訟、財務警訊等潛在重大負面消息。\n• 價值投資觀點：營收雙位數成長、技術線型轉強、無明顯經營利空，屬於成長型半導體測試企業。但需要交叉比對產業動態（如AI半導體資本支出、測試外包趨勢、美國對中國半導體限制是否間接影響台灣封測廠）。\n• 市場情緒：近期股價強勢反映市場對營收成長的樂觀預期，若有新廠投資、上游半導體景氣下滑、地緣政治風險、或大客戶轉單，需密切注意。\n• 風險評估：目前可見風險為擴產（銅鑼四期）的資本支出壓力，但無訂單下修、訴訟、財務異常等警訊。需持續追蹤公司公告與產業新聞。\n```\n\n## 近期重要新聞與潛在股價波動因素（2025/4~2025/7）\n\n- **股價強勁上漲與技術面轉強**：2025/7/16京元電子股價跳空大漲，MACD出現黃金交叉，技術面趨勢轉強，短期內市場情緒熱絡[1][5]。\n- **營收表現亮眼**：2025年6月單月營收28.15億元，年增25.3%；1~6月累計營收156.77億元，年增25.21%，顯示公司營運動能強勁[1]。\n- **股利政策與股東會**：2025/5/27召開股東常會，通過重要決議事項；近期董事會亦決議配息基準日，股利政策穩定[1][3]。\n- **擴廠計畫**：2025/6/20董事會通過以租地委建方式興建銅鑼廠四期廠房，擴產動作明顯，可能帶來後續營收成長，但也需觀察資本支出對財務結構的影響[1]。\n- **設備投資**：2025/5/28公告取得機器設備，顯示公司持續投資產能，強化競爭力[1]。\n- **法人說明會與國際曝光**：2025/5/16受邀參加瑞銀證券與野村證券舉辦之投資論壇，提升國際能見度，有利吸引外資關注[1]。\n- **子公司股利發放**：2025/5/20代重要子公司公告決議發放股利，集團整體現金流管理穩健[1]。\n\n## 潛在後續股價波動觀察點\n\n- **擴廠進度與產能開出**：銅鑼四期新廠的建設與投產進度，將直接影響未來營收成長動能。\n- **半導體產業景氣**：若整體半導體需求轉弱，或客戶調整庫存，可能影響測試服務訂單。\n- **資本支出壓力**：持續擴產可能增加折舊與財務負擔，需觀察毛利率與獲利能力能否維持。\n- **地緣政治風險**：美中科技戰若加劇，可能間接影響台灣封測廠接單狀況。\n- **大客戶動向**：目前未見大客戶轉單或砍單消息，但需持續追蹤。\n\n## 小結\n\n京元電子近期營收成長強勁，股價表現亮眼，並持續擴產與投資設備，基本面穩健[1]。主要潛在波動因子為擴廠進度與半導體景氣循環，但暫時無重大負面消息。投資人宜持續追蹤公司擴產進度、產業動態及國際政治經濟情勢。\n\n🛡️ 外部風險摘要：未偵測到重大風險關鍵字\n"
+  },
+  {
+    "role": "user",
+    "content": "請依照以下格式回傳：\n1) JSON，包括：\n   • mu_prediction（預測 μ，數值）\n   • 技術指標數值：ma5, macd, kd_k, kd_d, year_line\n2) 每個指標的計算公式或 Python 程式碼範例\n3) 不超過 50 字的簡短趨勢解讀\n範例輸出：\n```json\n{\n  \"mu_prediction\": 0.045,\n  \"ma5\": 162.5,\n  \"macd\": 1.23,\n  \"kd_k\": 68.4,\n  \"kd_d\": 72.1,\n  \"year_line\": 169.5\n}\n```\n```python\n# 計算 μ（示例）\nmu = historical_mu(prices)\n# 直接使用已傳入的技術指標\nma5 = tech_indicators['ma5']\n# 計算 MACD\nema12 = prices['Adj Close'].ewm(span=12).mean()\nema26 = prices['Adj Close'].ewm(span=26).mean()\nmacd = (ema12 - ema26).iloc[-1]\n```\n簡短解讀：目前短線多頭，年線壓力待突破。"
+  }
+]
+
+=== RAW RESPONSE OBJECT ===
+"ChatCompletion(id='chatcmpl-Bv3qyIQBBn4IMyXnX1LGGQz455ft5', choices=[Choice(finish_reason='length', index=0, logprobs=None, message=ChatCompletionMessage(content='```json\\n{\\n  \"mu_prediction\": 0.07,\\n  \"ma5\": null,\\n  \"macd\": null,\\n  \"kd_k\": null,\\n  \"kd_d\": null,\\n  \"year_line\": null\\n}\\n```\\n```python\\n# 計算 μ（示例）\\nhistorical_returns = [...]  # 歷史報酬率數據\\nmu = sum(historical_returns) / len(historical_returns)\\n\\n# 每日收盤價格計算 5 日均線\\nma5 = prices[\\'Close\\'].rolling(window=5).mean().iloc[-1]\\n\\n# 計算 MACD\\nema12 = prices[\\'Close\\'].ewm(span=12).mean()\\nema26 = prices[\\'Close\\'].ewm(span=26).mean()\\nmacd = (ema12 - ema26).iloc[-1]\\n\\n# 計算 K&D 指標\\nlow_min = prices[\\'Low\\'].rolling(window=14).min()\\nhigh_max = prices[\\'High\\'].rolling(window=14).max()\\nkd_k = ((prices[\\'Close\\'] - low_min) / (high_max - low_min) * 100).iloc[-1]\\nkd_d = kd_k.rolling(window=3).mean().iloc', refusal=None, role='assistant', annotations=[], audio=None, function_call=None, tool_calls=None))], created=1752939208, model='gpt-4o-mini-2024-07-18', object='chat.completion', service_tier='default', system_fingerprint=None, usage=CompletionUsage(completion_tokens=256, prompt_tokens=2357, total_tokens=2613, completion_tokens_details=CompletionTokensDetails(accepted_prediction_tokens=0, audio_tokens=0, reasoning_tokens=0, rejected_prediction_tokens=0), prompt_tokens_details=PromptTokensDetails(audio_tokens=0, cached_tokens=0)))"
+
+=== RAW CONTENT ===
+```json
+{
+  "mu_prediction": 0.07,
+  "ma5": null,
+  "macd": null,
+  "kd_k": null,
+  "kd_d": null,
+  "year_line": null
+}
+```
+```python
+# 計算 μ（示例）
+historical_returns = [...]  # 歷史報酬率數據
+mu = sum(historical_returns) / len(historical_returns)
+
+# 每日收盤價格計算 5 日均線
+ma5 = prices['Close'].rolling(window=5).mean().iloc[-1]
+
+# 計算 MACD
+ema12 = prices['Close'].ewm(span=12).mean()
+ema26 = prices['Close'].ewm(span=26).mean()
+macd = (ema12 - ema26).iloc[-1]
+
+# 計算 K&D 指標
+low_min = prices['Low'].rolling(window=14).min()
+high_max = prices['High'].rolling(window=14).max()
+kd_k = ((prices['Close'] - low_min) / (high_max - low_min) * 100).iloc[-1]
+kd_d = kd_k.rolling(window=3).mean().iloc

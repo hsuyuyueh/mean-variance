@@ -1,0 +1,49 @@
+=== RAW MESSAGES ===
+[
+  {
+    "role": "system",
+    "content": "<強化版\\_Buffett\\_Value\\_AI\\_Prompt>\n\n\\<ai\\_thinking\\_protocol>\n你是一位資深久經歷練的財經投資分析師。\n連網AI 須補足提示所需資料\n\n<預測分析指引 - 強化段落>\n✅ **請根據該公司最近三個月的公開新聞、產業趨勢與競爭變化進行預測。**\n\n* 優先搜尋財報發布、新產品、併購、裁員、政策補貼、訴訟或管理階層異動等明確事件。\n* 分析此事件是屬於：一次性衝擊、長期利多、還是短期市場反應。\n\n✅ **評估產業位置與資金趨勢：**\n\n* 判斷該公司所處產業目前為：新興 / 擴張 / 成熟 / 衰退。\n* 若產業近期吸引 ETF 或基金資金流入，評估為強勢；若資金流出則調降積極度。\n\n✅ **市場情境提示：**\n\n* 市場處於升息尾段、AI 科技強勢、民間消費疲軟，請調整個股預期報酬（μ）與 Sharpe 評估基準。\n* 若為科技、軍工、高股息型公司，請注意分別適用不同策略與估值模型。\n\n✅ **預測流程與 μ 計算邏輯（先分析、後預測）：**\n\n1. ⏳近期訊號總結：整理重大消息或數據。\n2. 🧭產業位置分析：判斷當前階段與資金環境。\n3. 🧠μ 預測引導：依據基本面與市場反應，推估短期、中期潛在年化報酬。\n\n✅ **如果找不到最新財報，請標註「尚未公布」，並註明採用跨年度或歷史資料估算，避免誤導。**\n\n✅ **若遇到成長型公司（如 AI 概念、電動車平台等），μ 可反映其 optionality（成長選擇權），而不侷限於當前 EPS。**\n\n✅ **請勿給出模糊回答（例如：「適合長期投資」、「基本面穩健」），務必具體指出差異化利基或事件驅動條件。**\n\n✅ **強化巴菲特風格判斷：**\n\n* 強調「安全邊際」、「合理估值」、「長期競爭優勢」、「可預測現金流」，適用於選股。\n* 分析若為偏離風格（如高速成長股），是否具備選擇權 optionality 作為合理補充。\n\n\\</ai\\_thinking\\_protocol>\n"
+  },
+  {
+    "role": "system",
+    "content": "本地計算 historical μ：{}"
+  },
+  {
+    "role": "system",
+    "content": "最新技術指標：{\"ma5\": null, \"macd\": null, \"kd_k\": null, \"kd_d\": null, \"year_line\": null}"
+  },
+  {
+    "role": "system",
+    "content": "\n📌 股票代號：3661.TW（3661.TW）\n產業：未知產業／未知行業\n▶ 歷史量化統計（過去 3 月）：  \n  • 年化報酬率：N/A  \n  • 年化波動率：N/A  \n▶ 基本面指標：  \n  • P/E：N/A  \n  • ROE：N/A  \n  • 營收成長率：N/A  \n資料蒐集區間：過去 3 個月重大新聞：  \n```thinking\n用戶要求查找3661.TW股票（世芯-KY）過去3個月的重大新聞或可能影響股價波動的消息，並做簡要條列。  \n從搜尋結果可以看到：  \n- 最新的新聞和消息多集中在2025年6-7月，包含股價表現、法人籌碼、分析師EPS下修、以及公司多項專案推動和展望。  \n- 具體重大消息包括7月16日的股價創五個月新高，多項專案動能，涉及ADAS及3奈米AI晶片量產計畫，這些將影響未來營運與營收成長。  \n- 分析師中長期EPS預估微幅下調，可能有短期壓力。  \n- 法人積極買超，股價近期表現優於大盤，有動能。  \n- 總結後條列成較易於理解的要點。  \n\n結合以上資訊進行回答，強調最新營運展望、法人成交動向、分析師EPS預估變化及股價近期表現，這些均為潛在股價波動的重要訊息。\n```\n\n3661.TW（世芯-KY）過去三個月內的重大新聞及可能影響股價波動的要點如下：\n\n- **7月16日股價創近五個月新高**，當天股價大漲約6.8%，報價約3610元，近5日股價上漲4.82%，顯示短期行情強勁，表現優於大盤[3][5]。  \n- **多項專案啟動，帶動營運動能**：包括中國汽車客戶的先進駕駛輔助系統（ADAS）預計年底量產，以及北美客戶3奈米AI晶片預計2026年首季量產。這些新產品有望推動未來營收成長[5]。  \n- **法人籌碼動向積極**：過去5日三大法人買超743張，投信買超643張，融資增加194張，法人資金流入支持股價走強[3]。  \n- **分析師2025年EPS預估小幅下修**：FactSet中位數EPS由73.15元下修至72.27元，最高估值82.06元，最低65.33元，顯示市場對盈利預期有所保守調整[4]。  \n- **市場關注7月台積電法說會**，因台積電是世芯-KY重要製造夥伴，法說會結果可能影響整體半導體供應鏈風向，進一步影響股價表現[1][5]。  \n\n以上訊息均為近期重要動向，特別是多項新產品專案啟動與法人積極買超，具有推升股價的潛力；而分析師預估下修與市場環境仍需關注，可能造成股價短期波動。\n\n🛡️ 外部風險摘要：未偵測到重大風險關鍵字\n"
+  },
+  {
+    "role": "user",
+    "content": "請依照以下格式回傳：\n1) JSON，包括：\n   • mu_prediction（預測 μ，數值）\n   • 技術指標數值：ma5, macd, kd_k, kd_d, year_line\n2) 每個指標的計算公式或 Python 程式碼範例\n3) 不超過 50 字的簡短趨勢解讀\n範例輸出：\n```json\n{\n  \"mu_prediction\": 0.045,\n  \"ma5\": 162.5,\n  \"macd\": 1.23,\n  \"kd_k\": 68.4,\n  \"kd_d\": 72.1,\n  \"year_line\": 169.5\n}\n```\n```python\n# 計算 μ（示例）\nmu = historical_mu(prices)\n# 直接使用已傳入的技術指標\nma5 = tech_indicators['ma5']\n# 計算 MACD\nema12 = prices['Adj Close'].ewm(span=12).mean()\nema26 = prices['Adj Close'].ewm(span=26).mean()\nmacd = (ema12 - ema26).iloc[-1]\n```\n簡短解讀：目前短線多頭，年線壓力待突破。"
+  }
+]
+
+=== RAW RESPONSE OBJECT ===
+"ChatCompletion(id='chatcmpl-Bv3O4b9WdegF4fVl3lC8gn1Klgm7s', choices=[Choice(finish_reason='stop', index=0, logprobs=None, message=ChatCompletionMessage(content='```json\\n{\\n  \"mu_prediction\": 0.035,\\n  \"ma5\": null,\\n  \"macd\": null,\\n  \"kd_k\": null,\\n  \"kd_d\": null,\\n  \"year_line\": null\\n}\\n```\\n```python\\n# 計算 μ（示例）\\nmu = historical_mu(prices)\\n# 直接使用已傳入的技術指標\\nma5 = tech_indicators[\\'ma5\\']\\n# 計算 MACD\\nema12 = prices[\\'Adj Close\\'].ewm(span=12).mean()\\nema26 = prices[\\'Adj Close\\'].ewm(span=26).mean()\\nmacd = (ema12 - ema26).iloc[-1]\\n```\\n簡短解讀：法人買超支撐股價，短期展望正面。', refusal=None, role='assistant', annotations=[], audio=None, function_call=None, tool_calls=None))], created=1752937416, model='gpt-4o-mini-2024-07-18', object='chat.completion', service_tier='default', system_fingerprint=None, usage=CompletionUsage(completion_tokens=170, prompt_tokens=1840, total_tokens=2010, completion_tokens_details=CompletionTokensDetails(accepted_prediction_tokens=0, audio_tokens=0, reasoning_tokens=0, rejected_prediction_tokens=0), prompt_tokens_details=PromptTokensDetails(audio_tokens=0, cached_tokens=0)))"
+
+=== RAW CONTENT ===
+```json
+{
+  "mu_prediction": 0.035,
+  "ma5": null,
+  "macd": null,
+  "kd_k": null,
+  "kd_d": null,
+  "year_line": null
+}
+```
+```python
+# 計算 μ（示例）
+mu = historical_mu(prices)
+# 直接使用已傳入的技術指標
+ma5 = tech_indicators['ma5']
+# 計算 MACD
+ema12 = prices['Adj Close'].ewm(span=12).mean()
+ema26 = prices['Adj Close'].ewm(span=26).mean()
+macd = (ema12 - ema26).iloc[-1]
+```
+簡短解讀：法人買超支撐股價，短期展望正面。

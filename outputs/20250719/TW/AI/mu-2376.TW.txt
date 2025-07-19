@@ -1,0 +1,52 @@
+=== RAW MESSAGES ===
+[
+  {
+    "role": "system",
+    "content": "<強化版\\_Buffett\\_Value\\_AI\\_Prompt>\n\n\\<ai\\_thinking\\_protocol>\n你是一位資深久經歷練的財經投資分析師。\n連網AI 須補足提示所需資料\n\n<預測分析指引 - 強化段落>\n✅ **請根據該公司最近三個月的公開新聞、產業趨勢與競爭變化進行預測。**\n\n* 優先搜尋財報發布、新產品、併購、裁員、政策補貼、訴訟或管理階層異動等明確事件。\n* 分析此事件是屬於：一次性衝擊、長期利多、還是短期市場反應。\n\n✅ **評估產業位置與資金趨勢：**\n\n* 判斷該公司所處產業目前為：新興 / 擴張 / 成熟 / 衰退。\n* 若產業近期吸引 ETF 或基金資金流入，評估為強勢；若資金流出則調降積極度。\n\n✅ **市場情境提示：**\n\n* 市場處於升息尾段、AI 科技強勢、民間消費疲軟，請調整個股預期報酬（μ）與 Sharpe 評估基準。\n* 若為科技、軍工、高股息型公司，請注意分別適用不同策略與估值模型。\n\n✅ **預測流程與 μ 計算邏輯（先分析、後預測）：**\n\n1. ⏳近期訊號總結：整理重大消息或數據。\n2. 🧭產業位置分析：判斷當前階段與資金環境。\n3. 🧠μ 預測引導：依據基本面與市場反應，推估短期、中期潛在年化報酬。\n\n✅ **如果找不到最新財報，請標註「尚未公布」，並註明採用跨年度或歷史資料估算，避免誤導。**\n\n✅ **若遇到成長型公司（如 AI 概念、電動車平台等），μ 可反映其 optionality（成長選擇權），而不侷限於當前 EPS。**\n\n✅ **請勿給出模糊回答（例如：「適合長期投資」、「基本面穩健」），務必具體指出差異化利基或事件驅動條件。**\n\n✅ **強化巴菲特風格判斷：**\n\n* 強調「安全邊際」、「合理估值」、「長期競爭優勢」、「可預測現金流」，適用於選股。\n* 分析若為偏離風格（如高速成長股），是否具備選擇權 optionality 作為合理補充。\n\n\\</ai\\_thinking\\_protocol>\n"
+  },
+  {
+    "role": "system",
+    "content": "本地計算 historical μ：{}"
+  },
+  {
+    "role": "system",
+    "content": "最新技術指標：{\"ma5\": null, \"macd\": null, \"kd_k\": null, \"kd_d\": null, \"year_line\": null}"
+  },
+  {
+    "role": "system",
+    "content": "\n📌 股票代號：2376.TW（2376.TW）\n產業：未知產業／未知行業\n▶ 歷史量化統計（過去 3 月）：  \n  • 年化報酬率：N/A  \n  • 年化波動率：N/A  \n▶ 基本面指標：  \n  • P/E：N/A  \n  • ROE：N/A  \n  • 營收成長率：N/A  \n資料蒐集區間：過去 3 個月重大新聞：  \n```thinking\n查詢核心需求：迅速定位 2376.TW（技嘉）最近三個月內重大新聞與潛在股價催化劑，並條列簡要摘要。  \n投資分析背景：技嘉是台灣主機板、顯卡、伺服器大廠，近年受AI伺服器需求拉抬，股價活躍。  \n資料現況：近期公開新聞聚焦AI伺服器訂單、法人動向、EPS預期變化與目標價，未見財務造假、經營權變更、鉅額減資或合併等重大事件。  \n風險層次：需關注AI訂單實際出貨進度、電競需求回溫幅度、法人買超續航力、EPS預期波動與外資動向。\n\n第一步：掃描所有搜尋結果，篩選日期在2025年4月19日之後，確認新聞皆屬近三個月內。  \n第二步：依重要性排序，排除重複、次要訊息，鎖定足以影響市場預期或股價的事件。  \n第三步：交叉驗證法人買超、訂單規模、營收貢獻時點、EPS共識變動與目標價調整，尋找潛在連動性。  \n第四步：對照技嘉近期股價表現（如挑戰今年高點、週漲幅、成交量放大），判斷新聞影響力是否已被市場反應，或仍有未充分定價的利多/利空。\n\n發現：  \n1. 技嘉旗下技鋼取得日本Datasection近80億台幣B200伺服器大單，夏季完成交付，Q3營收可期[1]。  \n2. 陸續接獲亞太Empyrion Digital、韓國SK集團合作，AI伺服器產品線擴張[1]。  \n3. GB300伺服器下半年逐步放量，電競主機板與顯卡需求同步回溫[1]。  \n4. 外資連續四日買超，三大法人周買超近8000張，市場資金明顯流入[1]。  \n5. 2025年EPS共識經FactSet調查，5月從18.42元上修至19.05元，6月又下修至19.67元，分析師最高估值22.11元，最低16.38元，目標價324元[3][5]。  \n6. 近期股價強勢，7/18收289.5元，周漲3%，成交量放大，顯示市場對AI伺服器成長性有高度期待[1]。\n\n潛在未充分反應訊息：  \n- B200大單Q3認列營收，若出貨進度符合預期，可能帶動財報優於預期。  \n- GB300放量時程與實際貢獻需追蹤，若優於預期可再推升股價。  \n- 外資與法人買超若持續，有望形成良性循環。  \n- EPS共識微幅下修，顯示市場對成長性仍有分歧，需留意後續財報是否支撐高估值。\n\n風險面：  \n- AI伺服器訂單若延遲或客戶調整資本支出，可能導致營收不如預期。  \n- 電競需求回溫力道若不強，恐影響多元產品線成長動能。  \n- EPS共識波動反映分析師對技嘉未來獲利能力仍有疑慮，需觀察實際獲利是否符合預期。\n\n結論：技嘉近期利多集中於AI伺服器訂單與出貨進度，法人買超助攻股價，但市場對EPS成長性共識略有鬆動，需密切追蹤Q3營收認列狀況與法人動向。現階段股價已部分反映樂觀預期，後市波動將取決於實際營收成長動能與市場風險偏好。\n```\n\n## 技嘉（2376.TW）最近3個月重大新聞與潛在股價催化劑簡要條列\n\n- **AI伺服器大型訂單**：技嘉旗下技鋼成功取得日本Datasection高達79億元台幣的B200伺服器訂單，預計於今年夏季完成交付，對第三季營收有顯著貢獻[1]。\n- **國際客戶合作擴展**：除日本外，還爭取到亞太Empyrion Digital、韓國SK集團的合作，顯示AI伺服器業務持續擴張[1]。\n- **新產品放量**：GB300伺服器預計於2025年下半年逐步放量出貨，AI相關產品線成長動能強勁[1]。\n- **法人資金流入**：外資連續4日買超，三大法人單週買超近8,000張，資金面有明顯支撐[1]。\n- **EPS預期波動**：根據FactSet調查，2025年EPS共識5月上修至19.05元，6月又微幅下修至19.67元，分析師最高估值22.11元，最低16.38元，目標價324元，顯示市場對獲利成長性預期略有分歧[3][5]。\n- **股價表現強勢**：7月18日收盤289.5元，單週上漲約3%，成交量放大，反映市場對AI與電競產品線復甦的高度期待[1]。\n- **電競需求回溫**：除伺服器外，電競主機板與顯卡需求亦見回溫，有助營運多元發展[1]。\n\n## 潛在後續股價波動因素\n\n- **Q3財報營收認列**：B200大單若準時出貨且認列順利，有望帶動單季營收與獲利跳升，反之則可能引發獲利了結賣壓。\n- **GB300實際出貨進度**：新伺服器產品放量時程與終端需求能否符合市場預期，將是觀察重點。\n- **法人動向變化**：外資與三大法人若持續買超，可望支撐股價；若轉為賣超，則需注意回檔風險。\n- **EPS共識二次下修**：近期EPS共識已出現微幅下修，顯示市場對高成長持續性存疑，後續財報若不如預期，股價修正壓力加大。\n- **電競市場需求**：若電競相關產品復甦不如預期，可能影響整體營收成長動能。\n- **國際客戶訂單能見度**：後續是否持續接獲大型國際客戶訂單，攸關長期成長性與市場信心。\n\n以上因素皆可能成為後續股價波動的催化劑，建議投資人密切追蹤訂單出貨、營收認列與法人進出動向。\n\n🛡️ 外部風險摘要：目標價\n"
+  },
+  {
+    "role": "user",
+    "content": "請依照以下格式回傳：\n1) JSON，包括：\n   • mu_prediction（預測 μ，數值）\n   • 技術指標數值：ma5, macd, kd_k, kd_d, year_line\n2) 每個指標的計算公式或 Python 程式碼範例\n3) 不超過 50 字的簡短趨勢解讀\n範例輸出：\n```json\n{\n  \"mu_prediction\": 0.045,\n  \"ma5\": 162.5,\n  \"macd\": 1.23,\n  \"kd_k\": 68.4,\n  \"kd_d\": 72.1,\n  \"year_line\": 169.5\n}\n```\n```python\n# 計算 μ（示例）\nmu = historical_mu(prices)\n# 直接使用已傳入的技術指標\nma5 = tech_indicators['ma5']\n# 計算 MACD\nema12 = prices['Adj Close'].ewm(span=12).mean()\nema26 = prices['Adj Close'].ewm(span=26).mean()\nmacd = (ema12 - ema26).iloc[-1]\n```\n簡短解讀：目前短線多頭，年線壓力待突破。"
+  }
+]
+
+=== RAW RESPONSE OBJECT ===
+"ChatCompletion(id='chatcmpl-Bv3pO7yDd0WcEiYvPxbSEyXe5CEcE', choices=[Choice(finish_reason='stop', index=0, logprobs=None, message=ChatCompletionMessage(content='```json\\n{\\n  \"mu_prediction\": 0.063,\\n  \"ma5\": null,\\n  \"macd\": null,\\n  \"kd_k\": null,\\n  \"kd_d\": null,\\n  \"year_line\": null\\n}\\n```\\n```python\\n# 計算 μ（示例）\\nmu = estimated_mu(income, growth_rate, market_conditions)\\n# 技術指標無數據，因此不需計算\\n# 但這裡示範其他可能的計算\\n# 假設需要計算 EMA、MACD等\\nimport pandas as pd\\n\\n# 計算 MACD\\nema12 = prices[\\'Adj Close\\'].ewm(span=12).mean()\\nema26 = prices[\\'Adj Close\\'].ewm(span=26).mean()\\nmacd = (ema12 - ema26).iloc[-1]  # MACD值取最後一個\\n```\\n簡短解讀：股價受到AI伺服器需求促動，潛力股表現強勢。', refusal=None, role='assistant', annotations=[], audio=None, function_call=None, tool_calls=None))], created=1752939110, model='gpt-4o-mini-2024-07-18', object='chat.completion', service_tier='default', system_fingerprint=None, usage=CompletionUsage(completion_tokens=215, prompt_tokens=2870, total_tokens=3085, completion_tokens_details=CompletionTokensDetails(accepted_prediction_tokens=0, audio_tokens=0, reasoning_tokens=0, rejected_prediction_tokens=0), prompt_tokens_details=PromptTokensDetails(audio_tokens=0, cached_tokens=0)))"
+
+=== RAW CONTENT ===
+```json
+{
+  "mu_prediction": 0.063,
+  "ma5": null,
+  "macd": null,
+  "kd_k": null,
+  "kd_d": null,
+  "year_line": null
+}
+```
+```python
+# 計算 μ（示例）
+mu = estimated_mu(income, growth_rate, market_conditions)
+# 技術指標無數據，因此不需計算
+# 但這裡示範其他可能的計算
+# 假設需要計算 EMA、MACD等
+import pandas as pd
+
+# 計算 MACD
+ema12 = prices['Adj Close'].ewm(span=12).mean()
+ema26 = prices['Adj Close'].ewm(span=26).mean()
+macd = (ema12 - ema26).iloc[-1]  # MACD值取最後一個
+```
+簡短解讀：股價受到AI伺服器需求促動，潛力股表現強勢。

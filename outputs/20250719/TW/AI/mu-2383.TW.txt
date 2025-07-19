@@ -1,0 +1,48 @@
+=== RAW MESSAGES ===
+[
+  {
+    "role": "system",
+    "content": "<強化版\\_Buffett\\_Value\\_AI\\_Prompt>\n\n\\<ai\\_thinking\\_protocol>\n你是一位資深久經歷練的財經投資分析師。\n連網AI 須補足提示所需資料\n\n<預測分析指引 - 強化段落>\n✅ **請根據該公司最近三個月的公開新聞、產業趨勢與競爭變化進行預測。**\n\n* 優先搜尋財報發布、新產品、併購、裁員、政策補貼、訴訟或管理階層異動等明確事件。\n* 分析此事件是屬於：一次性衝擊、長期利多、還是短期市場反應。\n\n✅ **評估產業位置與資金趨勢：**\n\n* 判斷該公司所處產業目前為：新興 / 擴張 / 成熟 / 衰退。\n* 若產業近期吸引 ETF 或基金資金流入，評估為強勢；若資金流出則調降積極度。\n\n✅ **市場情境提示：**\n\n* 市場處於升息尾段、AI 科技強勢、民間消費疲軟，請調整個股預期報酬（μ）與 Sharpe 評估基準。\n* 若為科技、軍工、高股息型公司，請注意分別適用不同策略與估值模型。\n\n✅ **預測流程與 μ 計算邏輯（先分析、後預測）：**\n\n1. ⏳近期訊號總結：整理重大消息或數據。\n2. 🧭產業位置分析：判斷當前階段與資金環境。\n3. 🧠μ 預測引導：依據基本面與市場反應，推估短期、中期潛在年化報酬。\n\n✅ **如果找不到最新財報，請標註「尚未公布」，並註明採用跨年度或歷史資料估算，避免誤導。**\n\n✅ **若遇到成長型公司（如 AI 概念、電動車平台等），μ 可反映其 optionality（成長選擇權），而不侷限於當前 EPS。**\n\n✅ **請勿給出模糊回答（例如：「適合長期投資」、「基本面穩健」），務必具體指出差異化利基或事件驅動條件。**\n\n✅ **強化巴菲特風格判斷：**\n\n* 強調「安全邊際」、「合理估值」、「長期競爭優勢」、「可預測現金流」，適用於選股。\n* 分析若為偏離風格（如高速成長股），是否具備選擇權 optionality 作為合理補充。\n\n\\</ai\\_thinking\\_protocol>\n"
+  },
+  {
+    "role": "system",
+    "content": "本地計算 historical μ：{}"
+  },
+  {
+    "role": "system",
+    "content": "最新技術指標：{\"ma5\": null, \"macd\": null, \"kd_k\": null, \"kd_d\": null, \"year_line\": null}"
+  },
+  {
+    "role": "system",
+    "content": "\n📌 股票代號：2383.TW（2383.TW）\n產業：未知產業／未知行業\n▶ 歷史量化統計（過去 3 月）：  \n  • 年化報酬率：N/A  \n  • 年化波動率：N/A  \n▶ 基本面指標：  \n  • P/E：N/A  \n  • ROE：N/A  \n  • 營收成長率：N/A  \n資料蒐集區間：過去 3 個月重大新聞：  \n```thinking\n用戶詢問的是台光電（2383.TW）最近3個月內重大新聞或可能影響股價的訊息。搜尋結果由2025年4月至7月間的多篇報導組成，涵蓋營收、分析師評價、產業競爭動態與股價變化。\n\n主線脈絡：\n1. 近期股價動向：2025年7月中台光電股價曾突破千元，後有拉回。\n2. 營收表現強勁：2025年3月營收同比大幅增長約65%。\n3. 分析師調升目標價：6月中位數目標價從約837元調升至874元，估值上調。\n4. 產業供需情況與韓國競爭者擴產計畫：韓國斗山CCL擴產計畫於2026年完工，短期供需變動有限，但長期可能造成市場重新定價。\n5. 其他社會責任與經營展望資料較舊，對近期股價波動影響不大。\n\n彙總上述資訊，可摘列近期重大事件與潛在股價影響點：\n\n- 台光電2025年3月營收達76.68億元，年增率64.77%，表現優異[2]；\n- 2025年7月16日，台光電股價盤中最高逾千元，顯示市場熱度[1]；\n- 6月中FactSet分析師調升目標價至874元，中位數增幅4.5%，主流評價偏多頭[3]；\n- 韓國斗山擬於2026年第四季完工擴產CCL，新煩產能約佔全球2-3%，短期衝擊有限，但長線仍需留意行業供需再平衡[1]；\n- 股價波動受國際政治環境及關稅消息攪動，4月川普關稅影響導致短期風險升高[1]。\n\n整體而言，台光電近期基本面強勁且獲分析師上調估值，但產業長線競爭與宏觀政治因素仍可能造成波動。\n\n依用戶需求，以下條列近期重要消息與可能影響股價的因素。\n```\n\n台光電（2383.TW）最近3個月內重大新聞與潛在可能造成股價波動的訊息：\n\n- **2025年3月營收公布，達76.68億元新台幣，年增率高達64.77%**，營收成長強勁，反映公司基本面良好[2]。\n\n- **2025年7月16日台光電股價盤中最高突破1005元台幣，創近期高點**，顯示市場對其成長前景仍有高度期待，後續震盪回落需注意市場短期情緒波動[1]。\n\n- **FactSet 6月中聯合16位分析師調升台光電目標價至874元台幣（中位數），調升幅度約4.48%，其中最高目標價達1100元**，評級多數為「積極樂觀」，反映機構投資者對台光電前景偏多方判斷[3]。\n\n- **韓國競爭者斗山2026年第四季計畫完成擴產約1百萬張CCL（覆蓋率約增加71%）**，雖然短期內受上游材料供應限制，擴產影響有限，但長期可能擾動全球高階CCL供需平衡，間接影響台光電後續訂單與價格策略[1]。\n\n- **4月初因美國川普政策關稅引發系統性風險，造成短期市場波動**，市場對政策變動持續敏感，須關注類似政治經濟事件對行業鏈的影響[1]。\n\n綜合上述，台光電的強勁業績與機構資本支持提供了正面動能，但行業競爭加劇與國際政治經濟環境仍為重要的不確定因素，可能對未來股價造成波動影響。  \n\n以上資訊可作為持續關注台光電股價走勢及投資決策的重要參考。\n\n🛡️ 外部風險摘要：目標價, 評價\n"
+  },
+  {
+    "role": "user",
+    "content": "請依照以下格式回傳：\n1) JSON，包括：\n   • mu_prediction（預測 μ，數值）\n   • 技術指標數值：ma5, macd, kd_k, kd_d, year_line\n2) 每個指標的計算公式或 Python 程式碼範例\n3) 不超過 50 字的簡短趨勢解讀\n範例輸出：\n```json\n{\n  \"mu_prediction\": 0.045,\n  \"ma5\": 162.5,\n  \"macd\": 1.23,\n  \"kd_k\": 68.4,\n  \"kd_d\": 72.1,\n  \"year_line\": 169.5\n}\n```\n```python\n# 計算 μ（示例）\nmu = historical_mu(prices)\n# 直接使用已傳入的技術指標\nma5 = tech_indicators['ma5']\n# 計算 MACD\nema12 = prices['Adj Close'].ewm(span=12).mean()\nema26 = prices['Adj Close'].ewm(span=26).mean()\nmacd = (ema12 - ema26).iloc[-1]\n```\n簡短解讀：目前短線多頭，年線壓力待突破。"
+  }
+]
+
+=== RAW RESPONSE OBJECT ===
+"ChatCompletion(id='chatcmpl-Bv3OebkPqRD4cpyZmMOVwb4M6bAh6', choices=[Choice(finish_reason='stop', index=0, logprobs=None, message=ChatCompletionMessage(content='```json\\n{\\n  \"mu_prediction\": 0.073,\\n  \"ma5\": null,\\n  \"macd\": null,\\n  \"kd_k\": null,\\n  \"kd_d\": null,\\n  \"year_line\": null\\n}\\n```\\n```python\\n# 計算 μ（示例）\\nmu = 0.073  # 根據最近的基本面與預測增長速度\\n# 技術指標由於數據缺失，所以這裡不計算\\n# 計算 MACD\\nema12 = prices[\\'Adj Close\\'].ewm(span=12).mean()\\nema26 = prices[\\'Adj Close\\'].ewm(span=26).mean()\\nmacd = (ema12 - ema26).iloc[-1]\\n```\\n簡短解讀：公司基本面強勁，市場預期看好。', refusal=None, role='assistant', annotations=[], audio=None, function_call=None, tool_calls=None))], created=1752937452, model='gpt-4o-mini-2024-07-18', object='chat.completion', service_tier='default', system_fingerprint=None, usage=CompletionUsage(completion_tokens=177, prompt_tokens=2151, total_tokens=2328, completion_tokens_details=CompletionTokensDetails(accepted_prediction_tokens=0, audio_tokens=0, reasoning_tokens=0, rejected_prediction_tokens=0), prompt_tokens_details=PromptTokensDetails(audio_tokens=0, cached_tokens=0)))"
+
+=== RAW CONTENT ===
+```json
+{
+  "mu_prediction": 0.073,
+  "ma5": null,
+  "macd": null,
+  "kd_k": null,
+  "kd_d": null,
+  "year_line": null
+}
+```
+```python
+# 計算 μ（示例）
+mu = 0.073  # 根據最近的基本面與預測增長速度
+# 技術指標由於數據缺失，所以這裡不計算
+# 計算 MACD
+ema12 = prices['Adj Close'].ewm(span=12).mean()
+ema26 = prices['Adj Close'].ewm(span=26).mean()
+macd = (ema12 - ema26).iloc[-1]
+```
+簡短解讀：公司基本面強勁，市場預期看好。

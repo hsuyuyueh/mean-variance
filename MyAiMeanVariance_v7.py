@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 import argparse, sys, json
 from pathlib import Path
 import shutil
+import time
 
 from datetime import datetime, timedelta
 from pypfopt.risk_models import exp_cov
@@ -61,6 +62,33 @@ def throttle_tej():
     # 每次呼叫小延遲，避免 burst
     time.sleep(1)
 
+def fetch_fundamentals_yahoo(ticker):
+    """
+    使用 yfinance 從 Yahoo Finance 取得基本面：PE、ROE，並自動計算營收年增率（若可用）。
+    """
+    tk = yf.Ticker(ticker)
+    info = tk.info
+
+    # 取得 PE、ROE
+    pe = info.get("trailingPE") or info.get("forwardPE") or 0
+    roe = info.get("returnOnEquity", 0) * 100
+
+    # 營收年增率：嘗試從年度財報計算
+    rev_growth = 0
+    try:
+        fin = tk.financials  # DataFrame，欄位為年度
+        revenues = fin.loc["Total Revenue"]
+        # 取最近兩年比較
+        rev_growth = ((revenues.iloc[0] - revenues.iloc[1]) / revenues.iloc[1]) * 100
+    except Exception:
+        rev_growth = 0
+
+    return {
+        "pe": float(pe),
+        "roe": float(roe),
+        "rev_growth": float(rev_growth)
+    }
+    
 def fetch_fundamentals_tej(ticker):
     """
     從 TEJ API 取基本面：PE, ROE, 營收成長率等
@@ -185,19 +213,17 @@ def fetch_price_alphaav(symbol, start, end, api_key, pause=12):
     time.sleep(pause)
     return s
 
-def fetch_price(symbols, start, end, av_api_key):
-    prices = {}
-    for sym in symbols:
-        p = fetch_price_yahoo(sym, start, end)
-        # 只對美股（非 .TW/.T）做 Alpha Vantage fallback
-        if (p is None or p.empty) and not (sym.endswith(".TW") or sym.endswith(".T")):
-            # 先把 MoneyDJ style 的 .US 移除並轉 format
-            sym_av = _normalize_us_ticker(sym)
-            p = fetch_price_alphaav(sym_av, start, end, av_api_key)
-        if p is None:
-            p = pd.Series(dtype=float)
-        prices[sym] = p
-    return pd.DataFrame(prices)
+def fetch_price(symbols, start, end, av_api_key=None):
+    """一次下載所有 ticker 的價格，回傳 Adj Close DataFrame"""
+    data = yf.download(
+        tickers=symbols,
+        start=start,
+        end=end,
+        auto_adjust=True,
+        progress=False
+    )
+    # 如果有多層欄位，取 Adj Close
+    return data['Adj Close'] if 'Adj Close' in data else data
 
 
 class AiMeanVariancePortfolio:
@@ -216,7 +242,7 @@ class AiMeanVariancePortfolio:
         self.RUN_DAT = RUN_DATE
 
     def fetch_fundamentals(self):
-        cache_file = os.path.join(self.OUTPUT_ROOT, f"fundamentals_{self.RUN_DAT}.json")
+        cache_file = os.path.join(self.OUTPUT_ROOT, f"{self.market}/fundamentals_{self.RUN_DAT}.json")
         if os.path.exists(cache_file):
             print(f"[快取] 載入基本面資料：{cache_file}")
             self.fundamentals = pd.read_json(cache_file)
@@ -226,14 +252,15 @@ class AiMeanVariancePortfolio:
         for tk in tqdm(self.tickers, desc="抓取基本面資料"):
             try:
                 if self.market == 'TW':
-                    info = fetch_fundamentals_tej(tk)
+                    info = fetch_fundamentals_yahoo(tk)
                 else:
                     # JP 可套用 Alpha Vantage 或保留原 yfinance
-                    info = fetch_fundamentals_alpha_vantage(tk)
+                    info = fetch_fundamentals_yahoo(tk)
                 fundamentals[tk] = info
             except Exception as e:
                 print(f"[警告] {tk} 基本面抓取失敗：{e}，使用預設值")
                 fundamentals[tk] = {'pe':20, 'roe':10, 'rev_growth':0}
+            time.sleep(0.2)
 
         df = pd.DataFrame.from_dict(fundamentals, orient='index')
         df.to_json(cache_file, force_ascii=False, indent=2)
@@ -255,11 +282,11 @@ class AiMeanVariancePortfolio:
         # 若價格資料為空，跳過計算並預設 None
         if self.prices.empty:
             tech_indicators = {
-                "ma5":       None,
-                "macd":      None,
-                "kd_k":      None,
-                "kd_d":      None,
-                "year_line": None,
+                "ma5":       ma5.round(2).to_dict(),
+                "macd":      macd.round(4).to_dict(),
+                "kd_k":      kd_k.round(2).to_dict(),
+                "kd_d":      kd_d.round(2).to_dict(),
+                "year_line": year_line.round(2).to_dict(),
             }
         else:
             # 使用完整 DataFrame 計算各指標
@@ -270,17 +297,18 @@ class AiMeanVariancePortfolio:
             macd      = (ema12 - ema26).iloc[-1]
             low9      = adj.rolling(9).min()
             high9     = adj.rolling(9).max()
-            kd_k      = ((adj - low9) / (high9 - low9) * 100).iloc[-1]
-            kd_d      = kd_k.rolling(3).mean().iloc[-1]
+            raw_k = (adj - low9) / (high9 - low9) * 100
+            kd_k = raw_k.iloc[-1]  # Series
+            kd_d = raw_k.rolling(window=3).mean().iloc[-1]  # Series
             year_line = adj.rolling(window=252).mean().iloc[-1]
             tech_indicators = {
-                "ma5":       round(ma5,       2) if pd.notna(ma5) else None,
-                "macd":      round(macd,      4) if pd.notna(macd) else None,
-                "kd_k":      round(kd_k,      2) if pd.notna(kd_k) else None,
-                "kd_d":      round(kd_d,      2) if pd.notna(kd_d) else None,
-                "year_line": round(year_line, 2) if pd.notna(year_line) else None,
+                "ma5":       ma5.round(2).to_dict(),
+                "macd":      macd.round(4).to_dict(),
+                "kd_k":      kd_k.round(2).to_dict(),
+                "kd_d":      kd_d.round(2).to_dict(),
+                "year_line": year_line.round(2).to_dict(),
             }
-
+            
         # —— Step 3: 呼叫 AI，將技術指標也傳給 gpt_contextual_rating —— 
         self.mu_final = gpt_contextual_rating(
             tickers=self.tickers,
@@ -428,19 +456,23 @@ if __name__ == '__main__':
                            if os.path.exists("manual_jp_list.json") else ["7203.T","9984.T"]
     }
     tickers = MARKET_SOURCES[args.market]()
-    tickers = ['2330.TW', '2317.TW', '2454.TW']
+    #tickers = ['2330.TW', '2317.TW', '2454.TW']
     if args.market == "US":                       # 只清美股
         tickers = sorted({ _normalize_us_ticker(t) for t in tickers })
     start   = (datetime.today() - timedelta(days=365)).strftime('%Y-%m-%d')
     end     = datetime.today().strftime('%Y-%m-%d')
     
     # 改用備援方案取得價格
-    prices = fetch_price(
-        tickers,
-        start,
-        end,
-        av_api_key="你的 Alpha Vantage API KEY"
-    ).dropna(axis=1, how="all")
+    if args.market == "TW":
+        prices = yf.download(tickers, start=start, end=end, auto_adjust=False)['Adj Close']
+    if args.market == "US": 
+        prices = yf.download(tickers, start=start, end=end, auto_adjust=False)['Adj Close']
+        #prices = fetch_price(
+        #    tickers,
+        #    start,
+        #    end,
+        #    av_api_key=ALPHA_VANTAGE_API_KEY
+        #).dropna(axis=1, how="all")
 
     missing = set(tickers) - set(prices.columns)
     if missing:
@@ -456,7 +488,7 @@ if __name__ == '__main__':
                  market=args.market,              # 傳進去
                  OUTPUT_ROOT=OUTPUT_ROOT,
                  RUN_DATE=RUN_DATE,
-                 profile_level='P4'
+                 profile_level='P3'
               )
     model.rf_rate = rf_table[args.market]         # 依市場覆寫無風險利率
     model.fetch_fundamentals()

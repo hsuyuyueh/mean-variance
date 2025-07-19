@@ -1,0 +1,49 @@
+=== RAW MESSAGES ===
+[
+  {
+    "role": "system",
+    "content": "<強化版\\_Buffett\\_Value\\_AI\\_Prompt>\n\n\\<ai\\_thinking\\_protocol>\n你是一位資深久經歷練的財經投資分析師。\n連網AI 須補足提示所需資料\n\n<預測分析指引 - 強化段落>\n✅ **請根據該公司最近三個月的公開新聞、產業趨勢與競爭變化進行預測。**\n\n* 優先搜尋財報發布、新產品、併購、裁員、政策補貼、訴訟或管理階層異動等明確事件。\n* 分析此事件是屬於：一次性衝擊、長期利多、還是短期市場反應。\n\n✅ **評估產業位置與資金趨勢：**\n\n* 判斷該公司所處產業目前為：新興 / 擴張 / 成熟 / 衰退。\n* 若產業近期吸引 ETF 或基金資金流入，評估為強勢；若資金流出則調降積極度。\n\n✅ **市場情境提示：**\n\n* 市場處於升息尾段、AI 科技強勢、民間消費疲軟，請調整個股預期報酬（μ）與 Sharpe 評估基準。\n* 若為科技、軍工、高股息型公司，請注意分別適用不同策略與估值模型。\n\n✅ **預測流程與 μ 計算邏輯（先分析、後預測）：**\n\n1. ⏳近期訊號總結：整理重大消息或數據。\n2. 🧭產業位置分析：判斷當前階段與資金環境。\n3. 🧠μ 預測引導：依據基本面與市場反應，推估短期、中期潛在年化報酬。\n\n✅ **如果找不到最新財報，請標註「尚未公布」，並註明採用跨年度或歷史資料估算，避免誤導。**\n\n✅ **若遇到成長型公司（如 AI 概念、電動車平台等），μ 可反映其 optionality（成長選擇權），而不侷限於當前 EPS。**\n\n✅ **請勿給出模糊回答（例如：「適合長期投資」、「基本面穩健」），務必具體指出差異化利基或事件驅動條件。**\n\n✅ **強化巴菲特風格判斷：**\n\n* 強調「安全邊際」、「合理估值」、「長期競爭優勢」、「可預測現金流」，適用於選股。\n* 分析若為偏離風格（如高速成長股），是否具備選擇權 optionality 作為合理補充。\n\n\\</ai\\_thinking\\_protocol>\n"
+  },
+  {
+    "role": "system",
+    "content": "本地計算 historical μ：{}"
+  },
+  {
+    "role": "system",
+    "content": "最新技術指標：{\"ma5\": null, \"macd\": null, \"kd_k\": null, \"kd_d\": null, \"year_line\": null}"
+  },
+  {
+    "role": "system",
+    "content": "\n📌 股票代號：2393.TW（2393.TW）\n產業：未知產業／未知行業\n▶ 歷史量化統計（過去 3 月）：  \n  • 年化報酬率：N/A  \n  • 年化波動率：N/A  \n▶ 基本面指標：  \n  • P/E：N/A  \n  • ROE：N/A  \n  • 營收成長率：N/A  \n資料蒐集區間：過去 3 個月重大新聞：  \n```python\n#thinking\n# 提問核心：查詢 2393.TW（億光）近3個月內重大新聞或潛在股價波動訊息。\n# 操作：鎖定2025年4月下旬至7月上旬的區間，重點檢視法說、財報、產品、產業、政策、訴訟、併購等要素。\n# 限制：搜索結果僅有1篇5月26日法說會新聞，其餘為一般行情與法規資料，無其他重大公告。\n# 挑戰：需要從有限資料萃取可能影響未來股價的「潛在訊息」，並條列簡要。\n\n# 深入思考：\n# 1. 法說會摘要：營運保守，Q2營收估持平，但下半年在不可見光與車用產品帶動下可望回溫。原全年成長目標因國際局勢不確定性而下修。\n# 2. 產品結構：不可見光（光耦合器、感測元件）佔比提升，車用為雙引擎之一，顯示轉型動能。\n# 3. 外部風險：國際局勢（如地緣、匯率、需求）列為下修成長主因，屬潛在波動因子。\n# 4. 財務與市場數據（取自行情頁）：近一季EPS 1.32，本益比12.09，本淨比1.6，毛利率30.39%，營益率12.42%，顯示尚屬穩健，但需注意營收動能是否如預期回溫。\n# 5. 其他：搜尋結果無併購、訴訟、政策直接衝擊，也無突發利空或利多。\n\n# 價值投資框架：\n# - 基本面：財務結構穩健，轉型產品有成長性，但短期動能趨緩。\n# - 市場情緒：台股大盤若無系統性風險，個股波動主因來自營收展望與產品轉型進度。\n# - 價格修正：近期股價無劇烈波動，本益比、本淨比在合理區間，若下半年業績明顯優於預期，有機會帶動評價上修。\n# - 風險：國際局勢變數、產品轉型速度、下半年營收能否如期回溫。\n\n# 結論：以現有資訊，暫無突發重大事件，但下半年業績展望與國際變數為觀察重點。需緊盯法說會後續營收公布與產品出貨情況。\n```\n\n## 2393.TW 近3個月重大新聞與潛在股價波動訊息（簡要條列）\n\n- **2025年第二季營收展望保守**：公司於5月26日法人說明會中預估，第二季營收將與去年同期接近持平，上半年整體營運看法謹慎[1]。\n- **下半年成長動能轉移**：預計2025年下半年營運可望回溫，主要動能來自不可見光（如光耦合器、感測元件）與車用產品，其中不可見光產品第一季佔比已達40%，且持續成長，車用則為另一成長引擎[1]。\n- **全年成長目標下修**：原先預期全年營收有個位數成長，但受國際局勢不確定性增加影響，公司已調整全年展望[1]。\n- **產品轉型進展**：不可見光產品應用於太陽能發電廠、充電樁、穿戴裝置、人臉辨識等新興領域，顯示公司積極布局高階應用與非照明市場，有助中長期競爭力[1]。\n- **國際局勢與需求變數**：公司明確指出國際局勢（如地緣政治、全球經濟、終端需求）為營運最大不確定因素，可能影響實際營收與獲利表現，進而牽動股價[1]。\n- **無其他重大突發事件**：截至2025年7月中旬，公開資訊中未見重大訴訟、政策衝擊、併購或公司治理爭議。\n\n## 潛在股價波動因子摘要\n\n- **下半年營收是否符合預期**：若不可見光與車用產品出貨優於預期，股價有機會反應成長動能；反之若不如預期，可能面臨修正。\n- **國際局勢與匯率波動**：全球經濟與政治情勢變化，可能直接影響出口需求與獲利能力。\n- **產業競爭與技術轉型**：公司積極轉型至高階應用，能否維持競爭優勢與毛利率為長期觀察重點。\n- **無突發利空/利多**：現階段無其他足以造成短期股價劇烈波動的突發訊息。\n\n## 小結\n\n**近期最值得關注的即為5月法說會釋出的下半年成長動能與國際變數**，這將是未來幾個月股價波動的主要來源。投資人應密切追蹤每月營收公告、不可見光與車用產品出貨狀況，以及全球經濟情勢變化[1]。\n\n🛡️ 外部風險摘要：評價\n"
+  },
+  {
+    "role": "user",
+    "content": "請依照以下格式回傳：\n1) JSON，包括：\n   • mu_prediction（預測 μ，數值）\n   • 技術指標數值：ma5, macd, kd_k, kd_d, year_line\n2) 每個指標的計算公式或 Python 程式碼範例\n3) 不超過 50 字的簡短趨勢解讀\n範例輸出：\n```json\n{\n  \"mu_prediction\": 0.045,\n  \"ma5\": 162.5,\n  \"macd\": 1.23,\n  \"kd_k\": 68.4,\n  \"kd_d\": 72.1,\n  \"year_line\": 169.5\n}\n```\n```python\n# 計算 μ（示例）\nmu = historical_mu(prices)\n# 直接使用已傳入的技術指標\nma5 = tech_indicators['ma5']\n# 計算 MACD\nema12 = prices['Adj Close'].ewm(span=12).mean()\nema26 = prices['Adj Close'].ewm(span=26).mean()\nmacd = (ema12 - ema26).iloc[-1]\n```\n簡短解讀：目前短線多頭，年線壓力待突破。"
+  }
+]
+
+=== RAW RESPONSE OBJECT ===
+"ChatCompletion(id='chatcmpl-Bv3jkcDDoRokk8hdePeNhR5lb5xuP', choices=[Choice(finish_reason='stop', index=0, logprobs=None, message=ChatCompletionMessage(content='```json\\n{\\n  \"mu_prediction\": 0.03,\\n  \"ma5\": null,\\n  \"macd\": null,\\n  \"kd_k\": null,\\n  \"kd_d\": null,\\n  \"year_line\": null\\n}\\n```\\n```python\\n# 計算 μ（示例）\\nmu = (final_price - initial_price) / initial_price\\n# 直接使用已傳入的技術指標\\nma5 = tech_indicators[\\'ma5\\']  # 尚未提供\\n# 計算 MACD\\nema12 = prices[\\'Adj Close\\'].ewm(span=12).mean()\\nema26 = prices[\\'Adj Close\\'].ewm(span=26).mean()\\nmacd = (ema12 - ema26).iloc[-1]\\n```\\n簡短解讀：預期穩定回升，但需關注國際變數影響。', refusal=None, role='assistant', annotations=[], audio=None, function_call=None, tool_calls=None))], created=1752938760, model='gpt-4o-mini-2024-07-18', object='chat.completion', service_tier='default', system_fingerprint=None, usage=CompletionUsage(completion_tokens=184, prompt_tokens=2451, total_tokens=2635, completion_tokens_details=CompletionTokensDetails(accepted_prediction_tokens=0, audio_tokens=0, reasoning_tokens=0, rejected_prediction_tokens=0), prompt_tokens_details=PromptTokensDetails(audio_tokens=0, cached_tokens=0)))"
+
+=== RAW CONTENT ===
+```json
+{
+  "mu_prediction": 0.03,
+  "ma5": null,
+  "macd": null,
+  "kd_k": null,
+  "kd_d": null,
+  "year_line": null
+}
+```
+```python
+# 計算 μ（示例）
+mu = (final_price - initial_price) / initial_price
+# 直接使用已傳入的技術指標
+ma5 = tech_indicators['ma5']  # 尚未提供
+# 計算 MACD
+ema12 = prices['Adj Close'].ewm(span=12).mean()
+ema26 = prices['Adj Close'].ewm(span=26).mean()
+macd = (ema12 - ema26).iloc[-1]
+```
+簡短解讀：預期穩定回升，但需關注國際變數影響。

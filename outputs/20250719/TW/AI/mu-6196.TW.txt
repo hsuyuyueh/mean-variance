@@ -1,0 +1,55 @@
+=== RAW MESSAGES ===
+[
+  {
+    "role": "system",
+    "content": "<強化版\\_Buffett\\_Value\\_AI\\_Prompt>\n\n\\<ai\\_thinking\\_protocol>\n你是一位資深久經歷練的財經投資分析師。\n連網AI 須補足提示所需資料\n\n<預測分析指引 - 強化段落>\n✅ **請根據該公司最近三個月的公開新聞、產業趨勢與競爭變化進行預測。**\n\n* 優先搜尋財報發布、新產品、併購、裁員、政策補貼、訴訟或管理階層異動等明確事件。\n* 分析此事件是屬於：一次性衝擊、長期利多、還是短期市場反應。\n\n✅ **評估產業位置與資金趨勢：**\n\n* 判斷該公司所處產業目前為：新興 / 擴張 / 成熟 / 衰退。\n* 若產業近期吸引 ETF 或基金資金流入，評估為強勢；若資金流出則調降積極度。\n\n✅ **市場情境提示：**\n\n* 市場處於升息尾段、AI 科技強勢、民間消費疲軟，請調整個股預期報酬（μ）與 Sharpe 評估基準。\n* 若為科技、軍工、高股息型公司，請注意分別適用不同策略與估值模型。\n\n✅ **預測流程與 μ 計算邏輯（先分析、後預測）：**\n\n1. ⏳近期訊號總結：整理重大消息或數據。\n2. 🧭產業位置分析：判斷當前階段與資金環境。\n3. 🧠μ 預測引導：依據基本面與市場反應，推估短期、中期潛在年化報酬。\n\n✅ **如果找不到最新財報，請標註「尚未公布」，並註明採用跨年度或歷史資料估算，避免誤導。**\n\n✅ **若遇到成長型公司（如 AI 概念、電動車平台等），μ 可反映其 optionality（成長選擇權），而不侷限於當前 EPS。**\n\n✅ **請勿給出模糊回答（例如：「適合長期投資」、「基本面穩健」），務必具體指出差異化利基或事件驅動條件。**\n\n✅ **強化巴菲特風格判斷：**\n\n* 強調「安全邊際」、「合理估值」、「長期競爭優勢」、「可預測現金流」，適用於選股。\n* 分析若為偏離風格（如高速成長股），是否具備選擇權 optionality 作為合理補充。\n\n\\</ai\\_thinking\\_protocol>\n"
+  },
+  {
+    "role": "system",
+    "content": "本地計算 historical μ：{}"
+  },
+  {
+    "role": "system",
+    "content": "最新技術指標：{\"ma5\": null, \"macd\": null, \"kd_k\": null, \"kd_d\": null, \"year_line\": null}"
+  },
+  {
+    "role": "system",
+    "content": "\n📌 股票代號：6196.TW（6196.TW）\n產業：未知產業／未知行業\n▶ 歷史量化統計（過去 3 月）：  \n  • 年化報酬率：N/A  \n  • 年化波動率：N/A  \n▶ 基本面指標：  \n  • P/E：N/A  \n  • ROE：N/A  \n  • 營收成長率：N/A  \n資料蒐集區間：過去 3 個月重大新聞：  \n```thinking\n用戶詢問的是台灣股票代號6196（帆宣科技）在過去三個月內的重大新聞或可能影響股價的消息。根據提供的搜尋結果，我找到以下重點資訊：\n\n1. 2025年7月11日帆宣股價大漲7.01%，成交張數327張，短期內法人以買超為主（外資+1027張，投信+193張），顯示市場有明顯買盤動能，可能因利好消息或資金流入推升股價[3]。\n2. 2025年6月17日，該股股價呈現MACD高檔背離，股價尚未突破前波高點但指標創新高，技術面顯示漲勢有強度，且公司5月單月營收約42.3億元，年減25.05%，累計前5月營收約220億元，年減11.6%，營收雖減但仍維持高水準[1]。\n3. 公司近4季發放股利相當穩定，2025年第1季現金股利6元，無股票股利[1]。穩定配息政策對投資人有吸引力。\n4. 無明確提及重大併購、合作或新產品發布消息，但從法人積極買超及技術指標來看，市場對該股短期仍持偏多態度。\n\n總結這些要點，近期的股價波動主要受法人買盤與技術面支持影響，且公司配息穩定，營收雖有下滑但尚未出現大幅利空。\n\n我會將這些重點條列整理給用戶，方便快速掌握可能對股價造成影響的訊息。\n```\n\n帆宣科技 (6196.TW) 最近三個月內重大新聞與可能影響股價的重點：\n\n- **2025年7月11日股價大漲7.01%至198.5元**，成交量穩定，法人持續買超：\n  - 外資買超約1,027張，投信買超約193張，整體三大法人買超約1,139張。\n  - 短期股價呈現較強漲勢，法人買盤動能明顯推升股價[3]。\n\n- **技術面指標顯示強勢向上**：\n  - 2025年6月17日MACD指標出現高檔背離，股價尚未突破前波高點，但指標創新高，短期技術趨勢偏多[1]。\n\n- **營收與配息狀況**：\n  - 2025年5月單月營收約42.3億元，較去年同月減少約25%。\n  - 2025年1-5月累計營收約220億元，年減約11.6%，營收下降但整體規模仍大[1]。\n  - 最近四季均發放現金股利，2025年第一季現金股利6元，維持穩定配息[1]。\n\n- **無明顯重大併購或新產品消息披露**，但法人持續買超與技術面走勢顯示市場對該股信心穩定。\n\n綜合上述，近期帆宣股價的主要波動原因為法人積極買盤與技術面利多，雖然營收有下滑，但穩定配息和市場資金流入增添支持。有待關注未來若公司公布具體營運策略或產業消息，可能引發新一輪股價波動。\n\n🛡️ 外部風險摘要：未偵測到重大風險關鍵字\n"
+  },
+  {
+    "role": "user",
+    "content": "請依照以下格式回傳：\n1) JSON，包括：\n   • mu_prediction（預測 μ，數值）\n   • 技術指標數值：ma5, macd, kd_k, kd_d, year_line\n2) 每個指標的計算公式或 Python 程式碼範例\n3) 不超過 50 字的簡短趨勢解讀\n範例輸出：\n```json\n{\n  \"mu_prediction\": 0.045,\n  \"ma5\": 162.5,\n  \"macd\": 1.23,\n  \"kd_k\": 68.4,\n  \"kd_d\": 72.1,\n  \"year_line\": 169.5\n}\n```\n```python\n# 計算 μ（示例）\nmu = historical_mu(prices)\n# 直接使用已傳入的技術指標\nma5 = tech_indicators['ma5']\n# 計算 MACD\nema12 = prices['Adj Close'].ewm(span=12).mean()\nema26 = prices['Adj Close'].ewm(span=26).mean()\nmacd = (ema12 - ema26).iloc[-1]\n```\n簡短解讀：目前短線多頭，年線壓力待突破。"
+  }
+]
+
+=== RAW RESPONSE OBJECT ===
+"ChatCompletion(id='chatcmpl-Bv3hRxAnLi0PS0Qqx5hnqeZrVM56F', choices=[Choice(finish_reason='stop', index=0, logprobs=None, message=ChatCompletionMessage(content='```json\\n{\\n  \"mu_prediction\": 0.035,\\n  \"ma5\": null,\\n  \"macd\": null,\\n  \"kd_k\": null,\\n  \"kd_d\": null,\\n  \"year_line\": null\\n}\\n```\\n```python\\n# 計算 μ（示例）\\nmu = historical_mu(prices)\\n\\n# 計算 MACD\\nema12 = prices[\\'Adj Close\\'].ewm(span=12).mean()\\nema26 = prices[\\'Adj Close\\'].ewm(span=26).mean()\\nmacd = (ema12 - ema26).iloc[-1]\\n\\n# 計算 KD 指標\\nlow_min = prices[\\'Low\\'].rolling(window=14).min()\\nhigh_max = prices[\\'High\\'].rolling(window=14).max()\\nrsv = 100 * ((prices[\\'Close\\'] - low_min) / (high_max - low_min))\\nkd_k = rsv.ewm(span=3).mean().iloc[-1]\\nkd_d = kd_k.ewm(span=3).mean().iloc[-1]\\n```\\n簡短解讀：法人買盤明顯，短期趨勢看漲。', refusal=None, role='assistant', annotations=[], audio=None, function_call=None, tool_calls=None))], created=1752938617, model='gpt-4o-mini-2024-07-18', object='chat.completion', service_tier='default', system_fingerprint=None, usage=CompletionUsage(completion_tokens=242, prompt_tokens=1992, total_tokens=2234, completion_tokens_details=CompletionTokensDetails(accepted_prediction_tokens=0, audio_tokens=0, reasoning_tokens=0, rejected_prediction_tokens=0), prompt_tokens_details=PromptTokensDetails(audio_tokens=0, cached_tokens=0)))"
+
+=== RAW CONTENT ===
+```json
+{
+  "mu_prediction": 0.035,
+  "ma5": null,
+  "macd": null,
+  "kd_k": null,
+  "kd_d": null,
+  "year_line": null
+}
+```
+```python
+# 計算 μ（示例）
+mu = historical_mu(prices)
+
+# 計算 MACD
+ema12 = prices['Adj Close'].ewm(span=12).mean()
+ema26 = prices['Adj Close'].ewm(span=26).mean()
+macd = (ema12 - ema26).iloc[-1]
+
+# 計算 KD 指標
+low_min = prices['Low'].rolling(window=14).min()
+high_max = prices['High'].rolling(window=14).max()
+rsv = 100 * ((prices['Close'] - low_min) / (high_max - low_min))
+kd_k = rsv.ewm(span=3).mean().iloc[-1]
+kd_d = kd_k.ewm(span=3).mean().iloc[-1]
+```
+簡短解讀：法人買盤明顯，短期趨勢看漲。
