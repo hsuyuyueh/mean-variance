@@ -4,21 +4,25 @@ import os
 import datetime
 import json
 import hashlib
+import numpy as np
 
 PERPLEXITY_API_URL = "https://api.perplexity.ai/chat/completions"
 PERPLEXITY_MODEL = "sonar"
 from datetime import datetime
 RUN_DATE = datetime.today().strftime('%Y%m%d')
-CACHE_PATH = os.path.join("./outputs", RUN_DATE, "context_cache")
-os.makedirs(CACHE_PATH, exist_ok=True)
+default_root = os.path.join("outputs", datetime.today().strftime("%Y%m%d"))
+BASE_DIR = os.getenv('OUTPUT_ROOT', default_root)
+CACHE_PATH = ""
+#
 
 
-os.makedirs(CACHE_PATH, exist_ok=True)
-
-def _get_cache_filename(ticker: str, horizon: int) -> str:
+def _get_cache_filename(ticker: str, horizon: int, OUTPUT_ROOT="./output") -> str:
     key = f"{ticker}_{horizon}"
+    CACHE_PATH = os.path.join(OUTPUT_ROOT, "context_cache")
+    os.makedirs(CACHE_PATH, exist_ok=True)
     hashed = hashlib.md5(key.encode()).hexdigest()
-    return os.path.join(CACHE_PATH, f"{hashed}.json")
+    return os.path.join(CACHE_PATH, f"{ticker}.txt")
+    #return os.path.join(CACHE_PATH, f"{hashed}.json")
 
 def fetch_perplexity_news_summary(query: str, horizon_months: int = 3) -> str:
     api_key = os.getenv("PERPLEXITY_API_KEY")
@@ -59,8 +63,8 @@ def fetch_perplexity_news_summary(query: str, horizon_months: int = 3) -> str:
     except Exception as e:
         return f"查詢失敗：{e}"
 
-def build_context_bundle(ticker: str, horizon_months: int = 3) -> str:
-    cache_file = _get_cache_filename(ticker, horizon_months)
+def build_context_bundle(ticker: str, horizon_months: int = 3, OUTPUT_ROOT="./output") -> str:
+    cache_file = _get_cache_filename(ticker, horizon_months, OUTPUT_ROOT)
     if os.path.exists(cache_file):
         with open(cache_file, "r", encoding="utf-8") as f:
             return f.read()
@@ -68,13 +72,27 @@ def build_context_bundle(ticker: str, horizon_months: int = 3) -> str:
     try:
         stock = yf.Ticker(ticker)
         info = stock.info
-        name = info.get("shortName", ticker)
-        sector = info.get("sector", "未知產業")
+        name     = info.get("shortName", ticker)
+        sector   = info.get("sector", "未知產業")
         industry = info.get("industry", "未知行業")
+
+        # —— 新增量化指標：歷史報酬與波動率、本益比、ROE、營收成長率 —— 
+        # 取最近 horizon_months 個月的調整後收盤價
+        prices = yf.download(ticker, period=f"{horizon_months}mo", auto_adjust=True)["Adj Close"].dropna()
+        # 計算對數報酬
+        log_ret     = np.log(prices / prices.shift(1)).dropna()
+        annual_ret  = log_ret.mean() * 252
+        annual_vol  = log_ret.std()  * np.sqrt(252)
+        # 基本面指標
+        pe          = info.get("trailingPE", None)
+        roe         = info.get("returnOnEquity", None)        # 已是小數；轉百分比時 *100
+        rev_growth  = info.get("revenueGrowth", None)         # 已是小數
     except Exception:
-        name = ticker
-        sector = "未知產業"
-        industry = "未知行業"
+        name        = ticker
+        sector      = "未知產業"
+        industry    = "未知行業"
+        # 若讀不到資料，就設為 None
+        annual_ret = annual_vol = pe = roe = rev_growth = None
 
     query = f"{name} 或 {ticker}"
     news_section = fetch_perplexity_news_summary(query, horizon_months)
@@ -85,11 +103,19 @@ def build_context_bundle(ticker: str, horizon_months: int = 3) -> str:
         if word in news_section:
             risk_flags.append(word)
     risk_summary = ", ".join(risk_flags) if risk_flags else "未偵測到重大風險關鍵字"
+    roe_text = f"{roe*100:.2f}%" if roe is not None else "N/A"
 
     context = f"""
 📌 股票代號：{ticker}（{name}）
 產業：{sector}／{industry}
-資料蒐集區間：過去 {horizon_months} 個月重大新聞：
+▶ 歷史量化統計（過去 {horizon_months} 月）：  
+  • 年化報酬率：{annual_ret:.2% if annual_ret is not None else 'N/A'}  
+  • 年化波動率：{annual_vol:.2% if annual_vol is not None else 'N/A'}  
+▶ 基本面指標：  
+  • P/E：{pe:.2f if pe is not None else 'N/A'}  
+  • ROE：{roe_text}  
+  • 營收成長率：{rev_growth:.2% if rev_growth is not None else 'N/A'}  
+資料蒐集區間：過去 {horizon_months} 個月重大新聞：  
 {news_section}
 
 🛡️ 外部風險摘要：{risk_summary}
