@@ -1,0 +1,7 @@
+
+📌 股票代號：2357.TW（ASUSTEK COMPUTER INC）
+產業：Technology／Computer Hardware
+資料蒐集區間：過去 3 個月重大新聞：
+查詢失敗：Expecting value: line 1 column 1 (char 0)
+
+🛡️ 外部風險摘要：未偵測到重大風險關鍵字

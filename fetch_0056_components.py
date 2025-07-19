@@ -7,13 +7,13 @@ from datetime import datetime
 from playwright.sync_api import sync_playwright
 
 from datetime import datetime
-RUN_DATE = datetime.today().strftime("%Y%m%d")
-OUTPUT_ROOT = os.path.join("outputs", RUN_DATE)
-CACHE_DIR = os.path.join(OUTPUT_ROOT, "fetch_cache")
-os.makedirs(CACHE_DIR, exist_ok=True)
+#RUN_DATE = datetime.today().strftime("%Y%m%d")
+#OUTPUT_ROOT = os.getenv('OUTPUT_ROOT')
+#CACHE_DIR = os.path.join(OUTPUT_ROOT, "fetch_cache")
+#os.makedirs(CACHE_DIR, exist_ok=True)
+CACHE_DIR=""
 
-
-def fetch_0056_components():
+def fetch_0056_components(CACHE_DIR):
     today = datetime.today().strftime("%Y%m%d")
     cache_file = os.path.join(CACHE_DIR, f"0056_components_{today}.json")
     if os.path.exists(cache_file):
