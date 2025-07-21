@@ -6,6 +6,15 @@ import pandas as pd
 import yfinance as yf
 import json
 import os
+import logging
+import warnings
+
+# 關閉所有 WARNING 與以下等級的 logging
+logging.disable(logging.WARNING)
+# 完全忽略任何 warnings
+warnings.filterwarnings("ignore")
+
+# 接著再去匯入 matplotlib
 import matplotlib.pyplot as plt
 import argparse, sys, json
 from pathlib import Path
@@ -38,6 +47,14 @@ import seaborn as sns
 import numpy as np
 import os
 import re
+import inspect
+
+def lineno():
+    """回傳呼叫此函式的行號"""
+    return inspect.currentframe().f_back.f_lineno
+
+# 範例
+#print("這是行號：", lineno())
 
 # ---- 1. 讀取 API Key ----
 ALPHA_VANTAGE_API_KEY = os.getenv("ALPHA_VANTAGE_API_KEY")
@@ -88,8 +105,9 @@ def fetch_fundamentals_yahoo(ticker):
         revenues = fin.loc["Total Revenue"]
         # 取最近兩年比較
         rev_growth = ((revenues.iloc[0] - revenues.iloc[1]) / revenues.iloc[1]) * 100
-    except Exception:
+    except Exception as e:
         rev_growth = 0
+        print(date, "line：", lineno(), e)
 
     return {
         "pe": float(pe),
@@ -169,7 +187,8 @@ def fetch_price_yahoo(symbol, start, end):
     try:
         df = pdr.get_data_yahoo(symbol, start=start, end=end)
         return df["Adj Close"]
-    except:
+    except Exception as e:
+        print(date, "line：", lineno(), e)
         return None
 
 def fetch_price_alphaav(symbol, start, end, api_key, pause=12):
@@ -284,6 +303,7 @@ class AiMeanVariancePortfolio:
                     info = fetch_fundamentals_yahoo(tk)
                 fundamentals[tk] = info
             except Exception as e:
+                print(date, "line：", lineno(), e)
                 print(f"[警告] {tk} 基本面抓取失敗：{e}，使用預設值")
                 fundamentals[tk] = {'pe':20, 'roe':10, 'rev_growth':0}
             time.sleep(0.2)
@@ -414,6 +434,7 @@ class AiMeanVariancePortfolio:
             print(f"  • 原始 tickers: {self.tickers}")
             print(f"  • mu_final.index: {list(self.mu_final.index)}")
             print(f"  • covariance.index: {list(sigma.index)}")
+            print("line：", lineno())
             return
 
         # 只取有共通的 ticker 進行最佳化
@@ -427,6 +448,7 @@ class AiMeanVariancePortfolio:
         except ValueError as e:
             # 當所有資產預期報酬都 ≤ 無風險利率時，改用無風險利率=0 重算
             print(f"[警告] {e}，改用無風險利率=0 重新計算 max_sharpe")
+            print(date, "line：", lineno(), e)
             ef1.max_sharpe(risk_free_rate=0)
         # 取得該組合的預期年化報酬
         ret1, _, _ = ef1.portfolio_performance(risk_free_rate=self.rf_rate, verbose=False)
@@ -447,17 +469,14 @@ class AiMeanVariancePortfolio:
                 sector = 'N/A'
                 try:
                     sector = yf.Ticker(tk).info.get('sector', 'N/A')
-                except:
+                except Exception as e:
+                    print(date, "line：", lineno(), e)
                     pass
                 print(f"{tk}: {w:.2%}, μ={mu.get(tk,0):.2%}, Sector={sector}")
                 args.source = tk
                 args.sep='\t'
                 args.period='6mo'
                 args.window=63
-                
-                args.Increase=1+self.performance[1]
-                args.T=63
-                check_p_of_ticker(args)
                 
                 args.Increase=1+(self.performance[1]/2)
                 args.T=21
@@ -490,22 +509,40 @@ class AiMeanVariancePortfolio:
                 args.Increase=1-(self.performance[1]/2)
                 args.T=2
                 check_p_of_ticker(args)
+                
+                args.Increase=1+self.performance[1]
+                args.T=63
+                check_p_of_ticker(args)
+
         print(f"\n預期年化報酬: {self.performance[0]:.2%}, 年化波動率: {self.performance[1]:.2%}, Sharpe: {self.performance[2]:.2f}, P: {prob:.2f}\n")
 
     def estimate_portfolio_beta(self):
         idx_map = {'TW':'^TWII', 'US':'^GSPC', 'JP':'^N225'}
-        benchmark = yf.download(idx_map[self.market], period="1y", auto_adjust=False)['Adj Close']\
-                  .pct_change().dropna()
+        # 1. 先下載基準指數報酬
+        bm_df = yf.download(idx_map[self.market], period="1y", progress=False, auto_adjust=False)
+        if "Adj Close" in bm_df.columns:
+            benchmark = bm_df["Adj Close"].pct_change().dropna()
+        else:
+            benchmark = bm_df["Close"].pct_change().dropna()
+
+        # 2. 針對每個股票計算 beta
         betas = {}
         for tk in self.tickers:
             try:
-                stk  = yf.download(tk, period="1y", auto_adjust=False)['Adj Close']\
-                          .pct_change().dropna()
-                df2  = pd.concat([stk, benchmark], axis=1).dropna()
+                stk_df = yf.download(tk, period="1y", progress=False, auto_adjust=False)
+                if "Adj Close" in stk_df.columns:
+                    stk = stk_df["Adj Close"].pct_change().dropna()
+                else:
+                    stk = stk_df["Close"].pct_change().dropna()
+                df2 = pd.concat([stk, benchmark], axis=1).dropna()
                 betas[tk] = df2.cov().iloc[0,1] / df2.iloc[:,1].var()
-            except:
+            except Exception as e:
+                print(date, "line：", lineno(), e)
                 betas[tk] = 1.0
-        return round(sum(self.weights.get(tk,0)*betas.get(tk,1) for tk in self.tickers), 2)
+
+        # 3. 加權平均所有持股的 beta
+        return round(sum(self.weights.get(tk, 0) * betas.get(tk, 1.0)
+                         for tk in self.tickers), 2)
 
     def save_weights(self, filepath=None):
         path = filepath or os.path.join(OUTPUT_ROOT, "current_portfolio.json")
@@ -831,6 +868,7 @@ class AiMeanVariancePortfolio:
             window = self.prices.loc[:date].tail(window_length).dropna(axis=1, how='any')
             # 只在拿到完整 window_length 天數的資料時才做回測
             if len(window) < window_length:
+                print("line：", lineno())
                 continue
 
             sigma_bt = exp_cov(window, span=180)
@@ -846,18 +884,37 @@ class AiMeanVariancePortfolio:
                 ef_bt.add_objective(L2_reg, gamma=0.1)
 
                 use_target = self.target_return
-                if ef_bt.expected_sharpe() < 0.3:
+                # PyPortfolioOpt 新版已無 expected_sharpe()，先嘗試呼叫，若不存在則跳過
+                try:
+                    sharpe_est = ef_bt.expected_sharpe()
+                except AttributeError as e:
+                    sharpe_est = None
+                    print(date, "line：", lineno(), e)
+                if sharpe_est is not None and sharpe_est < 0.3:
                     use_target = self.rf_rate + 0.01
                     ef_bt.add_objective(L2_reg, gamma=0.3)
 
+                #ef_bt.efficient_return(target_return=use_target)
+                use_target = self.target_return
+                # 若 use_target 超過 mu_adj 的最大值，則自動調整為最大可行值的 99.9%
+                max_ret = mu_adj.max()
+                if use_target >= max_ret:
+                    print(f"[警告] target_return {use_target:.4f} ≥ 最大可行報酬 {max_ret:.4f}，已自動調整")
+                    use_target = max_ret * 0.999
                 ef_bt.efficient_return(target_return=use_target)
+                
                 weights_bt = ef_bt.clean_weights()
                 perf_bt = ef_bt.portfolio_performance(risk_free_rate=self.rf_rate, verbose=False)
                 top5 = dict(sorted(weights_bt.items(), key=lambda x: -x[1])[:5])
 
                 # === 計算該期 beta ===
                 idx_map = {'TW':'^TWII', 'US':'^GSPC', 'JP':'^N225'}
-                bm_ret = yf.download(idx_map[self.market], period="1y", progress=False)["Adj Close"].pct_change().dropna()
+                #bm_ret = yf.download(idx_map[self.market], period="1y", progress=False)["Adj Close"].pct_change().dropna()
+                bm_df = yf.download(idx_map[self.market], period="1y", progress=False, auto_adjust=False)
+                if "Adj Close" in bm_df.columns:
+                    bm_ret = bm_df["Adj Close"].pct_change().dropna()
+                else:
+                    bm_ret = bm_df["Close"].pct_change().dropna()
                 betas = {}
                 for tk in weights_bt:
                     try:
@@ -865,7 +922,8 @@ class AiMeanVariancePortfolio:
                         dfb = pd.concat([stk_ret, bm_ret], axis=1).dropna()
                         beta_val = dfb.cov().iloc[0,1] / dfb.iloc[:,1].var()
                         betas[tk] = beta_val
-                    except:
+                    except Exception as e:
+                        print(date, "line：", lineno(), e)
                         betas[tk] = 1.0
                 portfolio_beta = round(sum(weights_bt.get(tk, 0) * betas.get(tk, 1.0) for tk in weights_bt), 3)
 
@@ -898,7 +956,8 @@ class AiMeanVariancePortfolio:
                     'beta': portfolio_beta
                 })
 
-            except:
+            except Exception as e:
+                print(date, "line：", lineno(), e)
                 continue
 
         df = pd.DataFrame(results)
@@ -907,20 +966,29 @@ class AiMeanVariancePortfolio:
         # ——— 新增：若回測結果為空，跳過後續繪圖與報告生成 ———
         if df.empty:
             print("[資訊] 回測結果為空，無法繪製圖表或生成報告，已跳過。")
+            print("line：", lineno())
             return df
-        if portfolio_value[1:]:
+        if len(portfolio_value) > 1:
             value_series = pd.Series(portfolio_value[1:], index=dates_bt)
             benchmark_series_sim = pd.Series(benchmark_value[1:], index=dates_bt)
             rolling_max = value_series.cummax()
             drawdowns = (value_series - rolling_max) / rolling_max
             max_drawdown = drawdowns.min()
-            df['portfolio_value'] = value_series.values
-            df['benchmark_value'] = benchmark_series_sim.values
-            df['drawdown'] = drawdowns.values
+            # 用 index 對齊 DataFrame，再賦值
+            df['portfolio_value'] = value_series.reindex(df.index)
+            df['benchmark_value'] = benchmark_series_sim.reindex(df.index)
+            df['drawdown']        = drawdowns.reindex(df.index)
         else:
             max_drawdown = None
 
-        avg_excess = sum(excess_returns) / len(excess_returns) if excess_returns else 0
+        #avg_excess = sum(excess_returns) / len(excess_returns) if excess_returns else 0
+        # 计算平均超额报酬，并确保为标量（不是 Series）
+        raw_excess = sum(excess_returns) / len(excess_returns) if excess_returns else 0
+        try:
+            # 如果 accidental 变成了 Series，就取第一个元素
+            avg_excess = float(raw_excess)
+        except Exception:
+            avg_excess = raw_excess.iloc[0] if hasattr(raw_excess, 'iloc') else raw_excess
         win_rate = win_count / max(len(df),1)
 
         bt_json = os.path.join(self.OUTPUT_ROOT, "backtest_report.json")
@@ -939,8 +1007,9 @@ class AiMeanVariancePortfolio:
         summary_path = os.path.join(self.OUTPUT_ROOT, f"backtest_summary.txt")
         with open(summary_path, 'w', encoding='utf-8') as f:
             f.write(f"最大跌幅 Max Drawdown: {max_drawdown:.2%}\n")
-            f.write(f"勝率（打敗基準）: {win_count} / {len(df)} = {win_rate:.2%}\n")
-            f.write(f"平均超額報酬: {avg_excess:.2%}\n")
+            f.write(f"胜率（打败基准）: {win_count} / {len(df)} = {win_rate:.2%}\n")
+            # 这里 avg_excess 已经是 float，可以安全使用百分比格式
+            f.write(f"平均超额报酬: {avg_excess:.2%}\n")
 
         # plot top holdings chart
         self.plot_top_holdings_summary(df)
@@ -989,7 +1058,7 @@ if __name__ == '__main__':
     }
     tickers = MARKET_SOURCES[args.market]()
     #tickers = ['2330.TW', '2317.TW', '2454.TW']
-    tickers = ['2330.TW', '2317.TW']
+    #tickers = ['2330.TW', '2317.TW']
     if args.market == "US":                       # 只清美股
         tickers = sorted({ _normalize_us_ticker(t) for t in tickers })
     start   = (datetime.today() - timedelta(days=365)).strftime('%Y-%m-%d')
@@ -1040,13 +1109,14 @@ if __name__ == '__main__':
     model.optimize()
     model.save_weights()
     rebalance_freq="2W"
+    print("line：", lineno())
     df_bt = model.backtest(rebalance_freq=rebalance_freq)
     # 保護性檢查：確保有回測結果且包含 sharpe 欄位才列印，否則提示錯誤
     if not df_bt.empty and 'sharpe' in df_bt.columns:
         print("\n{rebalance_freq}回測平均 Sharpe:", df_bt['sharpe'].mean().round(2))
     else:
         print("\n[錯誤] 無法計算 Sharpe：回測結果為空或缺少 'sharpe' 欄位。")
-    
+    print("line：", lineno())
     rebalance_freq="1W"
     df_bt = model.backtest(rebalance_freq=rebalance_freq)
     # 保護性檢查：確保有回測結果且包含 sharpe 欄位才列印，否則提示錯誤
@@ -1054,7 +1124,7 @@ if __name__ == '__main__':
         print("\n{rebalance_freq}回測平均 Sharpe:", df_bt['sharpe'].mean().round(2))
     else:
         print("\n[錯誤] 無法計算 Sharpe：回測結果為空或缺少 'sharpe' 欄位。")
-        
+    print("line：", lineno())
     rebalance_freq="1M"
     df_bt = model.backtest(rebalance_freq=rebalance_freq)
     # 保護性檢查：確保有回測結果且包含 sharpe 欄位才列印，否則提示錯誤
@@ -1062,10 +1132,13 @@ if __name__ == '__main__':
         print("\n{rebalance_freq}回測平均 Sharpe:", df_bt['sharpe'].mean().round(2))
     else:
         print("\n[錯誤] 無法計算 Sharpe：回測結果為空或缺少 'sharpe' 欄位。")
-        
+    print("line：", lineno())
     df_90 = model.backtest(window_length=90)
+    print("line：", lineno())
     df_180 = model.backtest(window_length=180)
+    print("line：", lineno())
     df_252 = model.backtest(window_length=252)
+    print("line：", lineno())
     ## 如果有 market_cond 欄位，才做分組統計；否則提示警告
     #if 'market_cond' in df_252.columns:
     #    stats = df_252.groupby('market_cond')[['sharpe', 'drawdown']].mean()
