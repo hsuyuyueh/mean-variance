@@ -1,0 +1,10 @@
+=== 最佳化結果與回測摘要 ===
+回測平均 Sharpe: N/A
+最終權重：
+null
+Performance:
+{
+  "exp_ret": null,
+  "vol": null,
+  "sharpe": null
+}

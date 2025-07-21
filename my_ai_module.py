@@ -66,19 +66,48 @@ def gpt_contextual_rating(tickers, base_mu=None, tech_indicators=None, model="gp
         else:
             context_bundle = build_context_bundle(tk, horizon_months, OUTPUT_ROOT)
 
+
+
+        #—— 重構：把 request/response/content 一次寫入 OUTPUT_ROOT/AI --------
+        raw_dir = os.path.join(OUTPUT_ROOT, "AI")
+        os.makedirs(raw_dir, exist_ok=True)
+        raw_path = os.path.join(raw_dir, f"mu-{tk}.txt")
+        #cache_file = _get_cache_filename(tk, horizon_months, OUTPUT_ROOT)
+        if os.path.exists(raw_path):
+            with open(raw_path, "r", encoding="utf-8") as cf:
+                print(f"[快取] {raw_path}")
+                content = cf.read()
+                # 統一 JSON 擷取流程
+                pattern = r'(?s)^.*?(?=== RAW CONTENT ===)'
+                content = re.sub(pattern, '', content)
+                json_match = re.search(r"```json\s*([\s\S]*?)\s*```", content)
+                if json_match and json_match.group(1).strip():
+                    json_str = json_match.group(1).strip()
+                else:
+                    obj_match = re.search(r"(\{[\s\S]*?\})", content)
+                    if obj_match:
+                        json_str = obj_match.group(1)
+                    else:
+                        raise ValueError("無法從 AI 回應中擷取到 JSON 物件")
+                print(f"\n\n\n[快取] {json_str}")
+                data = json.loads(json_str)
+                mu_raw = float(data.get("mu_prediction", 0.0))
+                mu = mu_raw / 100 if mu_raw > 1 else mu_raw
+                pattern = r'(?s)^=== RAW CONTENT ===\s*```json.*?```\s*'
+                content = re.sub(pattern, '', content)
+                basis = content
+                print(f"[說明] {tk} 的 μ = {mu} 判斷依據：{basis}")
+                continue
+ 
         # 第一段 system: base_prompt；第二段 system: context_bundle
         messages = [
-            {"role": "system", "content": base_prompt},
-            {"role": "system", "content": f"本地計算 historical μ：{base_mu}"},
-            {"role": "system", "content": f"最新技術指標：{json.dumps(tech_indicators, ensure_ascii=False)}"},
-            {"role": "system", "content": context_bundle},
+            {"role": "system", "content": f"base_prompt:{base_prompt}, 最新技術指標：{json.dumps(tech_indicators, ensure_ascii=False)}, context_bundle:{context_bundle}"},
             {"role": "user", "content": (
                 "請依照以下格式回傳：\n"
                 "1) JSON，包括：\n"
                 "   • mu_prediction（預測 μ，數值）\n"
                 "   • 技術指標數值：ma5, macd, kd_k, kd_d, year_line\n"
-                "2) 每個指標的計算公式或 Python 程式碼範例\n"
-                "3) 不超過 50 字的簡短趨勢解讀\n"
+                "2) 不超過 2048 字的簡短趨勢解讀\n"
                 "範例輸出：\n"
                 "```json\n"
                 "{\n"
@@ -89,18 +118,7 @@ def gpt_contextual_rating(tickers, base_mu=None, tech_indicators=None, model="gp
                 "  \"kd_d\": 72.1,\n"
                 "  \"year_line\": 169.5\n"
                 "}\n"
-                "```"
-                "\n```python\n"
-                "# 計算 μ（示例）\n"
-                "mu = historical_mu(prices)\n"
-                "# 直接使用已傳入的技術指標\n"
-                "ma5 = tech_indicators['ma5']\n"
-                "# 計算 MACD\n"
-                "ema12 = prices['Adj Close'].ewm(span=12).mean()\n"
-                "ema26 = prices['Adj Close'].ewm(span=26).mean()\n"
-                "macd = (ema12 - ema26).iloc[-1]\n"
-                "```\n"
-                "簡短解讀：目前短線多頭，年線壓力待突破。"
+                "分析須包含 目前已知的重大資訊足以影響大盤過個股走勢, 基本面, 資金面, 市場面, 相關必要線型情況和指數資訊。供後續用來評估3個月內的可能走勢和後續發展"
             )}
         ]
 
@@ -108,18 +126,15 @@ def gpt_contextual_rating(tickers, base_mu=None, tech_indicators=None, model="gp
             resp = client.chat.completions.create(
                 model=model,
                 messages=messages,
-                max_completion_tokens=256,
+                max_completion_tokens=2048,
                 temperature=1
             )
             # Debug: 印出原始回應與內容
             #print(f"DEBUG raw resp: {resp}")
             content = resp.choices[0].message.content.strip()
-            print(f"DEBUG content: {content}")
+            #print(f"DEBUG content: {content}")
 
-            # —— 重構：把 request/response/content 一次寫入 OUTPUT_ROOT/AI --------
-            raw_dir = os.path.join(OUTPUT_ROOT, "AI")
-            os.makedirs(raw_dir, exist_ok=True)
-            raw_path = os.path.join(raw_dir, f"mu-{tk}.txt")
+
             with open(raw_path, "w", encoding="utf-8") as fw:
                 # 1) RAW MESSAGES
                 fw.write("=== RAW MESSAGES ===\n")
@@ -130,12 +145,12 @@ def gpt_contextual_rating(tickers, base_mu=None, tech_indicators=None, model="gp
                 fw.write("\n\n")
 
                 # 2) RAW RESPONSE OBJECT
-                fw.write("=== RAW RESPONSE OBJECT ===\n")
-                try:
-                    fw.write(json.dumps(resp, default=lambda o: str(o), indent=2, ensure_ascii=False))
-                except Exception as e:
-                    fw.write(f"Error serializing resp: {e}\n{resp}")
-                fw.write("\n\n")
+                #fw.write("=== RAW RESPONSE OBJECT ===\n")
+                #try:
+                #    fw.write(json.dumps(resp, default=lambda o: str(o), indent=2, ensure_ascii=False))
+                #except Exception as e:
+                #    fw.write(f"Error serializing resp: {e}\n{resp}")
+                #fw.write("\n\n")
 
                 # 3) RAW CONTENT (純文字)
                 fw.write("=== RAW CONTENT ===\n")
