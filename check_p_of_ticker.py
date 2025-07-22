@@ -11,21 +11,42 @@ from scipy.stats import norm
 mpl.rcParams['font.sans-serif'] = ['Microsoft JhengHei']
 mpl.rcParams['axes.unicode_minus'] = False  # 處理負號顯示
 
-def get_close_series(ticker, period="6mo"):
-    # 方式一：若需要 Adj Close，設定 auto_adjust=False
-    data = yf.download(ticker, period=period, progress=False, auto_adjust=False)
-    # 若仍想用 auto_adjust=True 版本，註解上行並改用下面這行：
-    # data = yf.download(ticker, period=period, progress=False)
-    
-    # 彈性取用價格欄位
-    if 'Adj Close' in data.columns:
-        close = data['Adj Close']
-    elif 'Close' in data.columns:
-        close = data['Close']
+def get_close_series(ticker, period="6mo", field: str = "close") -> pd.Series:
+    """
+    下載指定 ticker 的欄位序列。
+    Parameters
+    ----------
+    ticker : str
+    period : str  e.g. '6mo', '1y'
+    field  : str  'close' (預設) | 'volume' | 任何 yfinance 回傳欄位名
+    Returns
+    -------
+    pandas.Series  去除 NA
+    """
+    df = yf.download(ticker, period=period, progress=False, auto_adjust=False)
+
+    field = field.lower()
+    if field in {"close", "adj close", "adj_close", "price"}:
+        if "Adj Close" in df.columns:
+            s = df[["Adj Close"]]        # 先取成 DataFrame 以統一流程
+        elif "Close" in df.columns:
+            s = df[["Close"]]
+        else:
+            raise KeyError(f"{ticker} 找不到價格欄位")
+    elif field == "volume":
+        s = df[["Volume"]]
+    elif field in df.columns:
+        s = df[[field]]
     else:
-        raise KeyError(f"{ticker} 資料中找不到 'Adj Close' 或 'Close' 欄位")
-    
-    return close.dropna()
+        raise KeyError(f"{ticker} 無欄位 {field}")
+
+    # 🆕─── **強制壓成 1‑D Series** ──────────────────────────
+    s = s.squeeze("columns")            # DataFrame → Series；若已是 Series 不變
+    if isinstance(s, np.ndarray):       # 萬一還是 ndarray
+        s = pd.Series(s.ravel(), index=df.index[: len(s.ravel())])
+    # ─────────────────────────────────────────────────────
+
+    return s.dropna()
 
 
 def get_close_from_txt(filepath, sep='\t', date_col=0, price_col=1):
@@ -46,7 +67,7 @@ def check_p_of_ticker(args):
         close = get_close_from_txt(args.source, sep=args.sep)
     else:
         close = get_close_series(args.source, period=args.period)
-        print(f"從 yfinance 讀入 {len(close)} 筆收盤價")
+        #print(f"從 yfinance 讀入 {len(close)} 筆收盤價")
 
     # 印出最後 5 筆確認
     #print("最後五筆收盤價：")
@@ -56,11 +77,13 @@ def check_p_of_ticker(args):
     window = args.window
     returns = close.pct_change().dropna()
     recent_returns = returns[-window:]
-    mu_daily = recent_returns.mean()
-    sigma_daily = recent_returns.std(ddof=1)
+    mu_daily_raw = recent_returns.mean()
+    sigma_daily_raw = recent_returns.std(ddof=1)
     # ── 將 pandas.Series ‚μ‘, ‚σ‘ 轉純量，避免後面 numpy 運算跑回 pandas ──
-    mu_daily    = float(mu_daily.iloc[0])
-    sigma_daily = float(sigma_daily.iloc[0])
+    mu_daily    = mu_daily = (float(mu_daily_raw.iloc[0]) if isinstance(mu_daily_raw, pd.Series)
+             else float(mu_daily_raw))
+    sigma_daily = (float(sigma_daily_raw.iloc[0]) if isinstance(sigma_daily_raw, pd.Series)
+                else float(sigma_daily_raw))
 
     # 3. 描述近期趨勢
     total_return_3m = (close.iloc[-1] / close.iloc[-window] - 1) * 100
@@ -76,20 +99,50 @@ def check_p_of_ticker(args):
     mu_T = (mu_daily - 0.5 * sigma_daily**2) * T
     sigma_T = sigma_daily * np.sqrt(T)
     threshold = np.log(Increase)
-    prob = 1 - norm.cdf((threshold - mu_T) / sigma_T)
+    if Increase >= 1:   # 上漲事件
+        prob = 1 - norm.cdf((np.log(Increase)-mu_T)/sigma_T)
+    else:               # 下跌事件
+        prob =      norm.cdf((np.log(Increase)-mu_T)/sigma_T)  # 左尾
+    #prob = 1 - norm.cdf((threshold - mu_T) / sigma_T)
     # ─── 確保 prob 是純量 float ───
     prob      = float(prob)   # 或者用 prob = prob.item()
     #print(f"假設對數常態，三個月內漲幅≥10% 機率 ≈ {prob*100:.2f}%")
     
-    # 進階：蒙地卡羅模擬
+    # 進階：蒙地卡羅模擬 np.log
     simulations = 100_000
     Z = np.random.randn(simulations, T)
     S_T = np.exp(np.cumsum((mu_daily - 0.5*sigma_daily**2) + sigma_daily * Z, axis=1))
     # 模擬終值相對變動
     final_returns = S_T[:,-1]
-    mc_prob = np.mean(final_returns >= Increase)
+    if Increase >= 1:   # 上漲事件
+        mc_prob = np.mean(final_returns >= Increase)
+    else:               # 下跌事件
+        mc_prob = np.mean(final_returns <= Increase)
+    #mc_prob = np.mean(final_returns >= Increase)
     #print(f"蒙地卡羅模擬三個月內漲幅≥10% 機率 ≈ {mc_prob*100:.2f}%")
-    print(f"    {(args.source)}: 對數常態，{(args.T)}交易日數內漲幅≥{(args.Increase-1)*100:.2f}% 機率 ≈ {prob*100:.2f}%, 蒙地卡羅模擬 {(args.T)}交易日數內漲幅≥{(args.Increase-1)*100:.2f}% 機率 ≈ {mc_prob*100:.2f}%")
+    #print(
+    #
+    #f"  {(args.source)}: 讀入 {len(close)} 筆收盤價. 估"
+    #f"{args.T:02d} 交易日內漲幅 ≥ "
+    #f"{((args.Increase-1)*100):+06.2f}% 機率: 對數常態 ≈ "
+    #f"{prob*100:05.2f}%，蒙地卡羅 ≈ {mc_prob*100:05.2f}%"
+    #)
+    # 1. 先計算百分比
+    pct = abs(args.Increase - 1) * 100          # 5.0, 10.0, 30.0 …
+
+    # 2. 決定描述文字與不等號方向
+    if args.Increase >= 1:                      # ➕ 上漲事件
+        event_desc = f"漲幅 ≥ +{pct:05.2f}%"
+    else:                                       # ➖ 下跌事件
+        event_desc = f"跌幅 ≤ -{pct:05.2f}%"
+
+    # 3. 單行輸出
+    print(
+        f"  {(args.source)}: 讀入 {len(close)} 筆收盤價. "
+        f"估{args.T:02d} 交易日內{event_desc} 機率: "
+        f"對數常態 ≈ {prob*100:05.2f}%，蒙地卡羅 ≈ {mc_prob*100:05.2f}%"
+    )
+    #print(f"    {(args.source)}: 對數常態，{(args.T)}交易日數內漲幅 ≥  {(args.Increase-1)*100:.2f}% 機率 ≈ {prob*100:.2f}%, 蒙地卡羅模擬 {(args.T)}交易日數內漲幅≥{(args.Increase-1)*100:.2f}% 機率 ≈ {mc_prob*100:.2f}%")
     
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
@@ -110,11 +163,19 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     args.sep='\t'
-    args.period='6mo'
+    args.period='60mo'
     args.window=63
     performance=0.3
     args.Increase=1+performance
     args.T=63
+    check_p_of_ticker(args)
+    
+    args.Increase=1+(performance/2)
+    args.T=63
+    check_p_of_ticker(args)
+    
+    args.Increase=1+(performance/2)
+    args.T=42
     check_p_of_ticker(args)
     
     args.Increase=1+(performance/2)
@@ -125,23 +186,23 @@ if __name__ == '__main__':
     args.T=63
     check_p_of_ticker(args)
     
-    args.Increase=1-(performance/2)
+    args.Increase=1-(0.1)
     args.T=21
     check_p_of_ticker(args)
     
-    args.Increase=1-(performance/2)
+    args.Increase=1-(0.1)
     args.T=10
     check_p_of_ticker(args)
     
-    args.Increase=1-(performance/2)
+    args.Increase=1-(0.05)
     args.T=5
     check_p_of_ticker(args)
         
-    args.Increase=1-(performance/2)
+    args.Increase=1-(0.05)
     args.T=3
     check_p_of_ticker(args)
             
-    args.Increase=1-(performance/2)
+    args.Increase=1-(0.05)
     args.T=1
     check_p_of_ticker(args)
     

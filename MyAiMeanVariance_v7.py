@@ -13,21 +13,18 @@ import warnings
 logging.disable(logging.WARNING)
 # 完全忽略任何 warnings
 warnings.filterwarnings("ignore")
-
 # 接著再去匯入 matplotlib
 import matplotlib.pyplot as plt
 import argparse, sys, json
 from pathlib import Path
 import shutil
 import time
-
 from datetime import datetime, timedelta
 from pypfopt.risk_models import exp_cov
 from pypfopt.efficient_frontier import EfficientFrontier
 from pypfopt.objective_functions import L2_reg
 from scipy.stats import norm
 from tqdm import tqdm
-
 from check_p_of_ticker import check_p_of_ticker
 from fetch_0056_components import fetch_0056_components
 from fetch_0050_components import fetch_0050_components
@@ -36,18 +33,17 @@ from fetch_US_berkshire_components import fetch_US_berkshire_components
 from fetch_US_harvard_components import fetch_US_harvard_components
 from fetch_US_SPY_components import fetch_US_SPY_components
 from my_ai_module import gpt_contextual_rating
-
 import time, requests
 from datetime import date
-
-
 import collections
 from matplotlib.ticker import MaxNLocator
 import seaborn as sns
 import numpy as np
-import os
 import re
 import inspect
+
+from edge_with_confidence_v2 import get_edge_score
+import pandas_ta as ta
 
 def lineno():
     """回傳呼叫此函式的行號"""
@@ -323,13 +319,10 @@ class AiMeanVariancePortfolio:
         if os.path.exists(cache_file):
             with open(cache_file, "r", encoding="utf-8") as cf:
                 mu_dict = json.load(cf)
-            # 加上 market 後綴
-            self.mu_final = pd.Series({
-                f"{ticker}.{self.market}": float(val)
-                for ticker, val in mu_dict.items()
-            })
-            print(f"[INFO] 已從快取讀取 μ：{cache_file}")
-            return
+                # 把 "::" 之後的雜訊砍掉，只留純 ticker
+                clean = {k.split("::")[0]: v for k, v in mu_dict.items()}
+                self.mu_final = pd.Series(clean, dtype=float)
+                print(f"[INFO] 已從快取讀取 μ：{cache_file}")
 
         # 2. Step 1: 本地計算 historical μ
         log_ret = np.log(self.prices / self.prices.shift(1)).dropna()
@@ -404,20 +397,41 @@ class AiMeanVariancePortfolio:
                             raise ValueError("無法從 AI 回應中擷取到 JSON 物件")
                     print(f"\n\n\n[快取] {json_str}")
                     data = json.loads(json_str)
-                    mu_raw = float(data.get("mu_prediction", 0.0))
+                    raw_val = data.get("mu_prediction")
+                    mu_raw = float(raw_val) if raw_val is not None else 0.0
                     mu_dict[ticker] = mu_raw / 100 if mu_raw > 1 else mu_raw
                     continue
                     
 
             self.mu_final = pd.Series(mu_dict)
+        # 6. 
+        # 6.1. 先保留原 μ
+        self.mu_final_backup = self.mu_final.copy()
+        self.mu_edge = self.mu_final.copy()
+        
+        # 6.2. 逐檔修正：改用 self.prices，vol 以日報酬率 proxy
+        for tk in self.mu_edge.index:
+            # 價格序列
+            price = self.prices[tk].dropna()
+            # KD 指標 (％K)：因為 stoch 需 high, low, close 三參數，這裡以 price 作為 proxy
+            kd_df = ta.stoch(price, price, price, length=9)
+            kd_k = kd_df.iloc[:, 0].dropna()  # 取第一欄作為 %K
+            # 日報酬率作為波動率 proxy
+            vol = price.pct_change().dropna()
 
-        # 6. 最後寫入統一快取
+            # 使用最近 25 日資料計算 edge
+            edge = get_edge_score(tk, kd_k[-25:], vol[-25:])
+            # 修正 μ
+            self.mu_edge.loc[tk] *= (1 + edge)
+        # 6.3. 
+        self.mu_final = self.mu_edge.copy()
+            
+        # 7. 最後寫入統一快取
         with open(cache_file, "w", encoding="utf-8") as cf:
-            json.dump({k.split(f".{self.market}")[0]: v
-                       for k, v in self.mu_final.to_dict().items()},
-                      cf, indent=2)
+            json.dump({k: float(v) for k, v in self.mu_final.items()}, cf, indent=2)
         print(f"[INFO] 已寫入 μ 快取：{cache_file}")
 
+    # 8. 最佳化投組方法，與其他方法同級
     def optimize(self):
         sigma = exp_cov(self.prices, span=180)
         # 加上一點 jitter，確保 covariance matrix 正定
@@ -529,16 +543,22 @@ class AiMeanVariancePortfolio:
         betas = {}
         for tk in self.tickers:
             try:
+                # 下載日線（auto_adjust=False 保持與 benchmark 一致）
                 stk_df = yf.download(tk, period="1y", progress=False, auto_adjust=False)
+
+                # 1️⃣ 先嘗試 'Adj Close'，若不存在改用 'Close'
                 if "Adj Close" in stk_df.columns:
-                    stk = stk_df["Adj Close"].pct_change().dropna()
+                    stk_ret = stk_df["Adj Close"].pct_change().dropna()
                 else:
-                    stk = stk_df["Close"].pct_change().dropna()
-                df2 = pd.concat([stk, benchmark], axis=1).dropna()
-                betas[tk] = df2.cov().iloc[0,1] / df2.iloc[:,1].var()
+                    stk_ret = stk_df["Close"].pct_change().dropna()
+
+                dfb = pd.concat([stk_ret, bm_ret], axis=1).dropna()
+                beta_val = dfb.cov().iloc[0, 1] / dfb.iloc[:, 1].var()
+                betas[tk] = beta_val
+
             except Exception as e:
-                print(date, "line：", lineno(), e)
-                betas[tk] = 1.0
+                print(date, "line：", lineno(), e)  # 仍保留 log，但不會再是 'Adj Close'
+                betas[tk] = 1.0                     # fallback
 
         # 3. 加權平均所有持股的 beta
         return round(sum(self.weights.get(tk, 0) * betas.get(tk, 1.0)
@@ -866,13 +886,17 @@ class AiMeanVariancePortfolio:
 
         for date in dates:
             window = self.prices.loc[:date].tail(window_length).dropna(axis=1, how='any')
-            # 只在拿到完整 window_length 天數的資料時才做回測
-            if len(window) < window_length:
-                print("line：", lineno())
-                continue
+            # 讓 90% 以上天數有資料即可
+            window = window.dropna(axis=1, thresh=int(window_length*0.9))
+            if len(window) < window_length or window.shape[1] < 2:
+                continue  # 天數不足或股票不足
+            window = window.ffill().bfill()
 
             sigma_bt = exp_cov(window, span=180)
-            common_bt = self.mu_final.index.intersection(sigma_bt.index)
+            common_bt = self.mu_final.index.intersection(window.columns)
+            if len(common_bt) < 2:
+                print(f"[跳過] {date.date()} 可用資產 < 2")
+                continue
             mu_bt = self.mu_final.loc[common_bt]
             sigma_bt = sigma_bt.loc[common_bt, common_bt]
             mu_mom = mu_bt * (1 + 0.3 * ((window.iloc[-1]/window.iloc[-60]) - 1))
@@ -885,11 +909,19 @@ class AiMeanVariancePortfolio:
 
                 use_target = self.target_return
                 # PyPortfolioOpt 新版已無 expected_sharpe()，先嘗試呼叫，若不存在則跳過
-                try:
+                # --- 修正 start ------------------------------------------
+                # PyPortfolioOpt >=1.5 已無 expected_sharpe()
+                if hasattr(ef_bt, "expected_sharpe"):
                     sharpe_est = ef_bt.expected_sharpe()
-                except AttributeError as e:
-                    sharpe_est = None
-                    print(date, "line：", lineno(), e)
+                else:
+                    # 用 max_sharpe() 暫估；亦可直接設 None 跳過判斷
+                    try:
+                        ef_tmp = EfficientFrontier(mu_adj, sigma_bt)
+                        ef_tmp.max_sharpe(risk_free_rate=self.rf_rate)
+                        _, _, sharpe_est = ef_tmp.portfolio_performance(risk_free_rate=self.rf_rate, verbose=False)
+                    except Exception:
+                        sharpe_est = None
+                # --- 修正 end --------------------------------------------
                 if sharpe_est is not None and sharpe_est < 0.3:
                     use_target = self.rf_rate + 0.01
                     ef_bt.add_objective(L2_reg, gamma=0.3)
@@ -918,7 +950,9 @@ class AiMeanVariancePortfolio:
                 betas = {}
                 for tk in weights_bt:
                     try:
-                        stk_ret = yf.download(tk, period="1y", progress=False)["Adj Close"].pct_change().dropna()
+                        stk_df  = yf.download(tk, period="1y", progress=False, auto_adjust=False)
+                        price_c = "Adj Close" if "Adj Close" in stk_df.columns else "Close"
+                        stk_ret = stk_df[price_c].pct_change().dropna()
                         dfb = pd.concat([stk_ret, bm_ret], axis=1).dropna()
                         beta_val = dfb.cov().iloc[0,1] / dfb.iloc[:,1].var()
                         betas[tk] = beta_val
@@ -1107,38 +1141,41 @@ if __name__ == '__main__':
     print("缺少價格資料的 tickers:", sorted(missing_price))
     print("=== End Debug ===")
     model.optimize()
+    print("line：", lineno(), "model.optimize() done")
     model.save_weights()
+    print("line：", lineno(), " model.save_weights() done")
     rebalance_freq="2W"
     print("line：", lineno())
     df_bt = model.backtest(rebalance_freq=rebalance_freq)
     # 保護性檢查：確保有回測結果且包含 sharpe 欄位才列印，否則提示錯誤
     if not df_bt.empty and 'sharpe' in df_bt.columns:
-        print("\n{rebalance_freq}回測平均 Sharpe:", df_bt['sharpe'].mean().round(2))
+        print("\n",{rebalance_freq},"回測平均 Sharpe:", df_bt['sharpe'].mean().round(2))
     else:
         print("\n[錯誤] 無法計算 Sharpe：回測結果為空或缺少 'sharpe' 欄位。")
-    print("line：", lineno())
+    print("line：", lineno(), " df_bt = model.backtest(rebalance_freq=rebalance_freq) done")
     rebalance_freq="1W"
     df_bt = model.backtest(rebalance_freq=rebalance_freq)
     # 保護性檢查：確保有回測結果且包含 sharpe 欄位才列印，否則提示錯誤
     if not df_bt.empty and 'sharpe' in df_bt.columns:
-        print("\n{rebalance_freq}回測平均 Sharpe:", df_bt['sharpe'].mean().round(2))
+       print("\n",{rebalance_freq},"回測平均 Sharpe:", df_bt['sharpe'].mean().round(2))
     else:
         print("\n[錯誤] 無法計算 Sharpe：回測結果為空或缺少 'sharpe' 欄位。")
-    print("line：", lineno())
+    print("line：", lineno(), " df_bt = model.backtest(rebalance_freq=rebalance_freq) done")
     rebalance_freq="1M"
     df_bt = model.backtest(rebalance_freq=rebalance_freq)
     # 保護性檢查：確保有回測結果且包含 sharpe 欄位才列印，否則提示錯誤
     if not df_bt.empty and 'sharpe' in df_bt.columns:
-        print("\n{rebalance_freq}回測平均 Sharpe:", df_bt['sharpe'].mean().round(2))
+       print("\n",{rebalance_freq},"回測平均 Sharpe:", df_bt['sharpe'].mean().round(2))
     else:
         print("\n[錯誤] 無法計算 Sharpe：回測結果為空或缺少 'sharpe' 欄位。")
-    print("line：", lineno())
+    print("line：", lineno(), " df_bt = model.backtest(rebalance_freq=rebalance_freq) done")
     df_90 = model.backtest(window_length=90)
-    print("line：", lineno())
+    print("line：", lineno(), " df_90 = model.backtest(window_length=90) done")
     df_180 = model.backtest(window_length=180)
-    print("line：", lineno())
-    df_252 = model.backtest(window_length=252)
-    print("line：", lineno())
+    print("line：", lineno(), " df_180 = model.backtest(window_length=180) done")
+    
+    #df_252 = model.backtest(window_length=252)
+    #print("line：", lineno(), " df_252 = model.backtest(window_length=252) done")
     ## 如果有 market_cond 欄位，才做分組統計；否則提示警告
     #if 'market_cond' in df_252.columns:
     #    stats = df_252.groupby('market_cond')[['sharpe', 'drawdown']].mean()

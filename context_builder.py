@@ -6,6 +6,9 @@ import json
 import hashlib
 import numpy as np
 
+# 匯入機率評估模組
+import check_p_of_ticker_V6 as prob_mod
+
 PERPLEXITY_API_URL = "https://api.perplexity.ai/chat/completions"
 PERPLEXITY_MODEL = "sonar"
 from datetime import datetime
@@ -24,6 +27,29 @@ def _get_cache_filename(ticker: str, horizon: int, OUTPUT_ROOT="./output") -> st
     return os.path.join(CACHE_PATH, f"{ticker}.txt")
     #return os.path.join(CACHE_PATH, f"{hashed}.json")
 
+# ────────────────────  Probability Summary  ───────────────
+
+def extract_prob_summary(ticker: str) -> str:
+    """回傳多組門檻下的六法機率表 (文字)。"""
+    combos: Tuple[Tuple[int, float], ...] = (
+        (5, 0.95), (10, 0.90), (60, 0.90),  # 跌幅
+        (5, 1.05), (10, 1.05), (20, 1.05), (60, 1.20),  # 漲幅
+    )
+
+    lines = []
+    for T, k in combos:
+        res: Dict[str, float] = prob_mod.compute_probabilities(
+            ticker=ticker,
+            increase=k,   # 將 k 參數對應到 increase
+            T=T,
+            period="60mo"
+        )
+        header = f"【T={T} 天, 門檻=收盤價*{k:.2%}】"
+        body   = " ".join(f"{m}:{v*100:05.2f}%" for m, v in res.items())
+        lines.append(f"{header}  {body}")
+
+    return "\n".join(lines)
+    
 def fetch_perplexity_news_summary(query: str, horizon_months: int = 3) -> str:
     api_key = os.getenv("PERPLEXITY_API_KEY")
     if not api_key:
@@ -241,8 +267,20 @@ def build_context_bundle(ticker: str, horizon_months: int = 3, OUTPUT_ROOT="./ou
 {news_section}
 
 🛡️ 外部風險摘要：{risk_summary}
-"""
 
+| # 演算法評估機率                      | 何時適用                            
+| - ---------------------------- 	| --------------------------------------
+| 1 **歷史重抽樣（Bootstrap）**         | 想完全避免分布假設，只用歷史分布做情境重抽樣時        
+| 2 **Student-t 分布擬合**           	| 報酬率尖峰厚尾、右 / 左尾特別肥（單一小型股、週期性商品）
+| 3 **GARCH (1,1) + Student-t**  	| 報酬呈「波動聚集」又帶重尾（金融股、ETF、指數期貨）
+| 4 **Merton Jump-Diffusion**    	| 可能出現突發跳空（利多/利空新聞、災難、收購傳聞）  
+| 5 **對數常態（Lognormal / GBM）**    	| 標的整體趨勢向上、日報酬近似常態；想要**封閉公式**與最快估算（大多數大型權值股的短中期評估）
+| 6 **蒙地卡羅（Geometric Brownian）** 	| 想在 **任意複雜條件** 下做情境測試：多門檻、路徑相依 payoff，或用來驗證理論模型的誤差  
+"""
+    # ── 機率摘要 ──
+    prob_section = extract_prob_summary(ticker)
+    context += "\n📈 風險 / 報酬機率評估 (6 法)\n" + prob_section + "\n"
+    
     with open(cache_file, "w", encoding="utf-8") as f:
         f.write(context)
 

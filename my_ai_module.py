@@ -91,13 +91,15 @@ def gpt_contextual_rating(tickers, base_mu=None, tech_indicators=None, model="gp
                         raise ValueError("無法從 AI 回應中擷取到 JSON 物件")
                 print(f"\n\n\n[快取] {json_str}")
                 data = json.loads(json_str)
-                mu_raw = float(data.get("mu_prediction", 0.0))
+                # 處理 mu_prediction 可能為 null 的情況
+                raw_val = data.get("mu_prediction")
+                mu_raw = float(raw_val) if raw_val is not None else 0.0
                 mu = mu_raw / 100 if mu_raw > 1 else mu_raw
                 pattern = r'(?s)^=== RAW CONTENT ===\s*```json.*?```\s*'
                 content = re.sub(pattern, '', content)
                 basis = content
                 print(f"[說明] {tk} 的 μ = {mu} 判斷依據：{basis}")
-                continue
+                
  
         # 第一段 system: base_prompt；第二段 system: context_bundle
         messages = [
@@ -162,7 +164,8 @@ def gpt_contextual_rating(tickers, base_mu=None, tech_indicators=None, model="gp
             m = re.search(r"\{[\s\S]*\}", content)
             json_str = m.group(0) if m else content
             data = json.loads(json_str)
-            mu_raw = float(data.get("mu_prediction", 0.0))
+            raw_val = data.get("mu_prediction")
+            mu_raw = float(raw_val) if raw_val is not None else 0.0
             mu = mu_raw / 100 if mu_raw > 1 else mu_raw
             basis = data.get("mu_basis", "")
             # 印出 AI 說明 μ 值判斷依據
