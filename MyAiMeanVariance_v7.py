@@ -41,13 +41,36 @@ import seaborn as sns
 import numpy as np
 import re
 import inspect
+import cvxpy as cp
 
 from edge_with_confidence_v2 import get_edge_score
 import pandas_ta as ta
 
+from pandas.tseries.offsets import BDay
+
+def to_business_day(ts):
+    return ts if ts.dayofweek < 5 else ts - BDay( (ts.dayofweek - 4) )
+    
 def lineno():
     """回傳呼叫此函式的行號"""
     return inspect.currentframe().f_back.f_lineno
+
+# ---------- helper: safe efficient_return ----------
+def efficient_return_with_fallback(ef, target_return, solvers=("OSQP", "ECOS_BB", "SCS")):
+    """
+    Run EfficientFrontier.efficient_return with a list of candidate solvers.
+    PyPortfolioOpt 不支援直接在 method 傳 solver 參數，因此先設定
+    `ef.solver = <solver>` 再呼叫 efficient_return。若全部失敗，拋出最後錯誤。
+    """
+    last_err = None
+    for s in solvers:
+        try:
+            ef.solver = s            # ← 修正：先設定 solver
+            ef.efficient_return(target_return=target_return)
+            return
+        except (cp.error.SolverError, ValueError) as err:
+            last_err = err
+    raise last_err
 
 # 範例
 #print("這是行號：", lineno())
@@ -65,6 +88,17 @@ def throttle_alpha_vantage():
 TEJ_DAILY_LIMIT = 500  # 若您已付費，請改為 2000
 TEJ_COUNTER_FILE = "./cache/tej_count.json"
 
+def last_valid(series, dt, default=0.0):
+    if dt < series.index[0]:
+        return default
+    val = series.loc[:dt].iloc[-1]
+    if isinstance(val, (pd.Series, pd.DataFrame)):
+        val = val.squeeze()
+    try:
+        return float(val)
+    except Exception:
+        return float(val.iloc[0]) if hasattr(val, 'iloc') else default
+    
 def throttle_tej():
     today = date.today().isoformat()
     # 載入計數器
@@ -282,6 +316,9 @@ class AiMeanVariancePortfolio:
         #print("缺少 μ 預測檔案的 tickers：", missing_mu)
         #print("缺少價格資料的 tickers：", missing_price)
 
+    def _outfile(self, stem, ext=".png"):
+        return os.path.join(self.OUTPUT_ROOT, f"{stem}_{self.rebalance_freq}{ext}")
+    
     def fetch_fundamentals(self):
         cache_file = os.path.join(self.OUTPUT_ROOT, f"fundamentals_{self.RUN_DAT}.json")
         if os.path.exists(cache_file):
@@ -470,7 +507,7 @@ class AiMeanVariancePortfolio:
         self.target_return = min(ret1, mu.max() * 0.999)
         ef2 = EfficientFrontier(mu, sigma, weight_bounds=(0, 1))
         ef2.add_objective(L2_reg, gamma=0.1)
-        ef2.efficient_return(target_return=self.target_return)
+        efficient_return_with_fallback(ef2, self.target_return)
         self.weights = ef2.clean_weights()
         self.performance = ef2.portfolio_performance(risk_free_rate=self.rf_rate, verbose=False)
 
@@ -569,23 +606,21 @@ class AiMeanVariancePortfolio:
         with open(path, 'w') as f:
             json.dump(self.weights, f, indent=2)
 
-    def fetch_benchmark_series(self):
-        import yfinance as yf
-        import pandas as pd
+    def fetch_benchmark_series(self, start=None, end=None):
+        import yfinance as yf, pandas as pd
+        start = start or self.prices.index[0]
+        end   = end   or self.prices.index[-1]
 
-        # 下載基準資料，確保同時回傳 Close 與 Adj Close
-        if self.market == 'TW':
-            df_bench = yf.download("0050.TW", period="1y", progress=False, auto_adjust=False)
-        else:  # US
-            df_bench = yf.download("^GSPC", period="1y", progress=False, auto_adjust=False)
-
-        # 優先使用 ‘Adj Close’，若無此欄位則退而求其次使用 ‘Close’
-        if 'Adj Close' in df_bench.columns:
-            bm = df_bench['Adj Close']
-        else:
-            bm = df_bench['Close']
-
-        return bm.dropna()
+        ticker = "0050.TW" if self.market == "TW" else "^GSPC"
+        df = yf.download(ticker, start=start, end=end, auto_adjust=False,
+                         progress=False)
+        col = "Adj Close" if "Adj Close" in df.columns else "Close"
+        # ⬇︎ 保證「工作日頻率 + 連續價」-------------
+        bench = (df[col]
+                 .asfreq("B")           # 補齊工作日
+                 .ffill()               # forward-fill 缺值
+                 .loc[start:end])       # 嚴格裁切
+        return bench
     
     def plot_top_holdings_summary(self, df):
         holding_counter = collections.Counter()
@@ -604,7 +639,7 @@ class AiMeanVariancePortfolio:
         plt.xticks(rotation=45)
         plt.gca().yaxis.set_major_locator(MaxNLocator(integer=True))
         plt.tight_layout()
-        output_path = os.path.join(self.OUTPUT_ROOT, "top_holdings_chart.png")
+        output_path = os.path.join(self.OUTPUT_ROOT, f"top_holdings_chart_{self.rebalance_freq}.png")
         plt.savefig(output_path)
         print(f"[資訊] 已儲存 top holdings 圖表：{output_path}")
 
@@ -619,7 +654,7 @@ class AiMeanVariancePortfolio:
             plt.title('Sharpe vs Beta by Market Condition')
             plt.legend()
             plt.tight_layout()
-            output_path = os.path.join(self.OUTPUT_ROOT, "sharpe_vs_beta_map.png")
+            output_path = os.path.join(self.OUTPUT_ROOT, f"sharpe_vs_beta_map_{self.rebalance_freq}.png")
             plt.savefig(output_path)
             print(f"[資訊] 已儲存 Sharpe vs Beta 圖表：{output_path}")
 
@@ -635,7 +670,7 @@ class AiMeanVariancePortfolio:
             plt.title('Sharpe vs Victory by Market Condition')
             plt.yticks([0, 1])
             plt.tight_layout()
-            output_path = os.path.join(self.OUTPUT_ROOT, "sharpe_vs_victory_map.png")
+            output_path = os.path.join(self.OUTPUT_ROOT, f"sharpe_vs_victory_map_{self.rebalance_freq}.png")
             plt.savefig(output_path)
             print(f"[資訊] 已儲存 Sharpe vs Victory 圖表：{output_path}")
 
@@ -653,15 +688,15 @@ class AiMeanVariancePortfolio:
             return "neutral"
 
     def generate_html_report(self):
-        html_path = Path(self.OUTPUT_ROOT) / "backtest_summary.html"
+        html_path = Path(self.OUTPUT_ROOT) / f"backtest_summary_{self.rebalance_freq}.html"
         with open(html_path, "w", encoding="utf-8") as f:
-            f.write("""
+            f.write(f"""
             <html><head><meta charset='utf-8'><title>Backtest Summary</title></head><body>
             <h1>📊 Backtest Summary</h1>
             <ul>
-              <li><img src='top_holdings_chart.png' width='600'></li>
-              <li><img src='sharpe_vs_beta_map.png' width='600'></li>
-              <li><img src='sharpe_vs_victory_map.png' width='600'></li>
+              <li><img src='top_holdings_chart_{self.rebalance_freq}.png' width='600'></li>
+              <li><img src='sharpe_vs_beta_map_{self.rebalance_freq}.png' width='600'></li>
+              <li><img src='sharpe_vs_victory_map_{self.rebalance_freq}.png' width='600'></li>
               <li><img src='portfolio_vs_benchmark.png' width='600'></li>
             </ul>
             <p>For full data, see <code>backtest_report.xlsx</code> and <code>backtest_summary.txt</code>.</p>
@@ -686,12 +721,12 @@ class AiMeanVariancePortfolio:
             plt.title('Tracking Error Distribution')
             plt.xlabel('μ - Realized Return')
             plt.tight_layout()
-            plt.savefig(os.path.join(self.OUTPUT_ROOT, "tracking_error_distribution.png"))
+            plt.savefig(os.path.join(self.OUTPUT_ROOT, f"tracking_error_distribution_{self.rebalance_freq}.png"))
 
             # summary
             avg_error = df['tracking_error'].mean()
             rmse = np.sqrt(np.mean(df['tracking_error']**2))
-            summary_path = os.path.join(self.OUTPUT_ROOT, f"backtest_summary.txt")
+            summary_path = os.path.join(self.OUTPUT_ROOT, f"backtest_summary_{self.rebalance_freq}.txt")
             with open(summary_path, 'a', encoding='utf-8') as f:
                 f.write(f"\nTracking Error 統計：\n")
                 f.write(f"平均誤差（μ - 實際）：{avg_error:.2%}\n")
@@ -713,8 +748,8 @@ class AiMeanVariancePortfolio:
         plt.ylabel('Weight Δ (L1 norm)')
         plt.grid(True)
         plt.tight_layout()
-        plt.savefig(os.path.join(self.OUTPUT_ROOT, "weight_change_trend.png"))
-        print("[資訊] 已儲存權重變動圖：weight_change_trend.png")
+        plt.savefig(os.path.join(self.OUTPUT_ROOT, f"weight_change_trend_{self.rebalance_freq}.png"))
+        print(f"[資訊] 已儲存權重變動圖：weight_change_trend_{self.rebalance_freq}.png")
 
     def plot_herfindahl_index(self, df):
         hhi_list = []
@@ -729,8 +764,8 @@ class AiMeanVariancePortfolio:
         plt.ylabel('HHI')
         plt.grid(True)
         plt.tight_layout()
-        plt.savefig(os.path.join(self.OUTPUT_ROOT, "herfindahl_index_trend.png"))
-        print("[資訊] 已儲存持股集中度圖：herfindahl_index_trend.png")
+        plt.savefig(os.path.join(self.OUTPUT_ROOT, f"herfindahl_index_trend_{self.rebalance_freq}.png"))
+        print(f"[資訊] 已儲存持股集中度圖：herfindahl_index_trend_{self.rebalance_freq}.png")
 
     def plot_stock_hit_rate(self, df):
         from collections import defaultdict
@@ -755,11 +790,11 @@ class AiMeanVariancePortfolio:
         plt.xticks(rotation=45)
         plt.ylim(0, 1)
         plt.tight_layout()
-        plt.savefig(os.path.join(self.OUTPUT_ROOT, "stock_hit_rate.png"))
-        print("[資訊] 已儲存個股方向命中率圖：stock_hit_rate.png")
+        plt.savefig(os.path.join(self.OUTPUT_ROOT, f"stock_hit_rate_{self.rebalance_freq}.png"))
+        print(f"[資訊] 已儲存個股方向命中率圖：stock_hit_rate_{self.rebalance_freq}.png")
 
     def generate_diagnostic_summary(self, df):
-        summary_path = os.path.join(self.OUTPUT_ROOT, "diagnostic_report.txt")
+        summary_path = os.path.join(self.OUTPUT_ROOT, f"diagnostic_report_{self.rebalance_freq}.txt")
         with open(summary_path, 'w', encoding='utf-8') as f:
             f.write("📊 Diagnostic Report for Portfolio Strategy\n")
             f.write("========================================\n\n")
@@ -869,18 +904,36 @@ class AiMeanVariancePortfolio:
         portfolio_value = [1_000_000]
         dates_bt = []
         benchmark_value = [1_000_000]
-
+        self.rebalance_freq=rebalance_freq
+        self.target_return = float(self.target_return)  # 保險強制 scalar
+        if isinstance(self.target_return, pd.Series):
+            self.target_return = float(self.target_return.iloc[0])
+        else:
+            self.target_return = float(self.target_return)
+        
         if self.prices.empty:
             print("[錯誤] 無法回測：價格資料為空，請確認是否成功取得股價資料。")
             return pd.DataFrame()
 
         vix_series, sp500_series = self.fetch_vix_benchmark()
-        benchmark_series = self.fetch_benchmark_series()
+        # 2. backtest() 取回 benchmark 並對齊
+        benchmark_series = self.fetch_benchmark_series(self.prices.index[0],
+                                                       self.prices.index[-1])
+        # ⬇ 強制只取單一 Series，避免多層欄位（防止錯誤）
+        if isinstance(benchmark_series, pd.DataFrame):
+            benchmark_series = benchmark_series.iloc[:, 0]
+        # 用 self.prices.index 可以確保與投組價格完全對齊
+        benchmark_series = benchmark_series.reindex(self.prices.index).ffill()
+
+        # 3. 初始化基準淨值（同基期 = 1_000_000）
+        benchmark_value = [1_000_000]
+        base_bm_price = benchmark_series.iloc[0]
         #dates = pd.date_range(self.prices.index[0], self.prices.index[-1], freq=rebalance_freq)
         # 如果你用 '1M' 會出現 FutureWarning，可改用 'ME' (month end)
-        freq = rebalance_freq.replace("1M", "ME")
-        dates = pd.date_range(self.prices.index[0], self.prices.index[-1], freq=freq)
-
+        freq_map = {'2W': '2W-FRI', '1W': 'W-FRI'}
+        freq = freq_map.get(rebalance_freq, rebalance_freq.replace("1M", "ME"))
+        #dates = pd.date_range(self.prices.index[0], self.prices.index[-1], freq=freq)
+        dates = [to_business_day(ts) for ts in pd.date_range(self.prices.index[0], self.prices.index[-1], freq=freq)]
         win_count = 0
         excess_returns = []
 
@@ -893,6 +946,9 @@ class AiMeanVariancePortfolio:
             window = window.ffill().bfill()
 
             sigma_bt = exp_cov(window, span=180)
+            # keep covariance positive‑definite
+            sigma_bt += np.eye(sigma_bt.shape[0]) * 1e-4
+            
             common_bt = self.mu_final.index.intersection(window.columns)
             if len(common_bt) < 2:
                 print(f"[跳過] {date.date()} 可用資產 < 2")
@@ -901,8 +957,32 @@ class AiMeanVariancePortfolio:
             sigma_bt = sigma_bt.loc[common_bt, common_bt]
             mu_mom = mu_bt * (1 + 0.3 * ((window.iloc[-1]/window.iloc[-60]) - 1))
             vol = window.pct_change().rolling(60).std().mean().fillna(0)
+            vol = vol.loc[mu_mom.index]  # ⭐ 強制對齊 index
             mu_adj = mu_mom * (1 / (1 + 0.5 * vol))
 
+            # 先對齊 index，再 dropna，避免 Series 乘法 mismatch
+            mu_mom, vol = mu_mom.align(vol, join="inner")
+            mu_adj = mu_mom * (1 / (1 + 0.5 * vol))
+            mu_adj = mu_adj.dropna()
+
+            # 取最大值，並強制轉 float scalar
+            if not mu_adj.empty:
+                max_ret = float(mu_adj.max())
+            else:
+                max_ret = 0.0  # fallback 預設值
+    
+            # 每次重平衡直接用 pct_change
+            pct = benchmark_series.pct_change()
+            bm_ret_val = last_valid(pct, date)
+            p1 = last_valid(benchmark_series, date)
+            p0 = last_valid(benchmark_series, date - pd.Timedelta(days=14))
+            # 若 date 剛好是第一筆，pct_change 為 NaN，預設 0
+            bm_ret_val = 0.0 if pd.isna(bm_ret_val) else bm_ret_val
+
+            # 先暫存當期基準報酬，等確認資料完整後再在 try 區塊裡統一更新 benchmark_value
+            #print("mu_adj:", mu_adj.head())
+            #print("mu_adj.max():", mu_adj.max())
+            #print("float(mu_adj.max()):", float(mu_adj.max()))
             try:
                 ef_bt = EfficientFrontier(mu_adj, sigma_bt, weight_bounds=(0, 1))
                 ef_bt.add_objective(L2_reg, gamma=0.1)
@@ -930,10 +1010,25 @@ class AiMeanVariancePortfolio:
                 use_target = self.target_return
                 # 若 use_target 超過 mu_adj 的最大值，則自動調整為最大可行值的 99.9%
                 max_ret = mu_adj.max()
+                if isinstance(max_ret, pd.Series):
+                    max_ret = max_ret.max()
                 if use_target >= max_ret:
                     print(f"[警告] target_return {use_target:.4f} ≥ 最大可行報酬 {max_ret:.4f}，已自動調整")
                     use_target = max_ret * 0.999
-                ef_bt.efficient_return(target_return=use_target)
+
+                try:
+                    efficient_return_with_fallback(ef_bt, use_target)
+                except Exception as e:
+                    # 全部 solver 失敗 → 退而用等權重，避免中斷回測
+                    print(date, "line：", lineno(), "所有 solver 均失敗，改用 equal‑weight", e)
+                    weights_bt = {tk: 1/len(mu_adj) for tk in mu_adj.index}
+                    w_vec = np.array(list(weights_bt.values()))
+                    exp_ret = sum(mu_adj[tk] * w for tk, w in weights_bt.items())
+                    exp_vol = np.sqrt(w_vec @ sigma_bt.values @ w_vec) * np.sqrt(252)
+                    perf_bt = (exp_ret, exp_vol, (exp_ret - self.rf_rate) / exp_vol if exp_vol else 0)
+                else:
+                    weights_bt = ef_bt.clean_weights()
+                    perf_bt = ef_bt.portfolio_performance(risk_free_rate=self.rf_rate, verbose=False)
                 
                 weights_bt = ef_bt.clean_weights()
                 perf_bt = ef_bt.portfolio_performance(risk_free_rate=self.rf_rate, verbose=False)
@@ -970,10 +1065,11 @@ class AiMeanVariancePortfolio:
                 if date in benchmark_series.index and date - pd.Timedelta(days=14) in benchmark_series.index:
                     p0 = benchmark_series.loc[date - pd.Timedelta(days=14)]
                     p1 = benchmark_series.loc[date]
-                    bm_ret_val = (p1 / p0) - 1
+                    bm_ret_val = float((p1 / p0) - 1)
                     benchmark_value.append(benchmark_value[-1] * (1 + bm_ret_val))
-                    excess_returns.append(perf_bt[0] - bm_ret_val * 252)
-                    if perf_bt[0] > bm_ret_val * 252:
+                    bm_scalar = float(bm_ret_val)
+                    excess_returns.append(perf_bt[0] - bm_scalar * 252)
+                    if perf_bt[0] > bm_scalar * 252:
                         win_count += 1
                 else:
                     benchmark_value.append(benchmark_value[-1])
@@ -989,9 +1085,8 @@ class AiMeanVariancePortfolio:
                     'market_cond': condition,
                     'beta': portfolio_beta
                 })
-
             except Exception as e:
-                print(date, "line：", lineno(), e)
+                #print(date, "line：", lineno(), e)
                 continue
 
         df = pd.DataFrame(results)
@@ -1036,9 +1131,10 @@ class AiMeanVariancePortfolio:
         plt.legend()
         plt.xticks(rotation=45)
         plt.tight_layout()
-        plt.savefig(os.path.join(self.OUTPUT_ROOT, "portfolio_vs_benchmark.png"))
+        plt.savefig(self._outfile("portfolio_vs_benchmark", ".png"))
+        
 
-        summary_path = os.path.join(self.OUTPUT_ROOT, f"backtest_summary.txt")
+        summary_path = self._outfile("backtest_summary", ".txt")
         with open(summary_path, 'w', encoding='utf-8') as f:
             f.write(f"最大跌幅 Max Drawdown: {max_drawdown:.2%}\n")
             f.write(f"胜率（打败基准）: {win_count} / {len(df)} = {win_rate:.2%}\n")
